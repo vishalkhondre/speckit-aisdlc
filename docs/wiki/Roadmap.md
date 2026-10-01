@@ -4,7 +4,7 @@
 |---|---|---|
 | 0. Discovery and decisions | Research on Spec Kit and related projects; decisions D-001 to D-022 | Done |
 | 1. Upstream contract | What Spec Kit 1.0 guarantees: manifests, composition, hooks, workflow engine (pinned at v1.0.13) | Done |
-| 2. Capability map | Every candidate capability marked keep, adapt or drop, reviewed by the specialist agents | In progress: prior-art sweep done, map draft next |
+| 2. Capability map | Every candidate capability marked keep, adapt or drop, reviewed by the specialist agents | In progress: map drafted and reviewed, awaiting decision |
 | 3. Skeleton and compatibility CI | An empty bundle that installs on supported Spec Kit versions and the latest release, plus release checks | Planned |
 | 4. MVP | Feature workflow with durable specs, per-feature session state, docs reconciliation, finish to PR | Planned |
 | 5. Breadth | Additional lifecycle commands, bugfix and quick change workflows, pluggable tracker | Planned |
@@ -16,14 +16,13 @@ feature after it is tested against new Spec Kit releases from the start.
 
 ## What is next
 
-The prior-art sweep is done: all 14 candidate capabilities were checked against existing projects
-([report](https://github.com/vishalkhondre/speckit-aisdlc/blob/main/docs/reviews/2026-10-01-prior-art-sweep-prior-art-researcher.md)).
-Its recommendations are not decisions; they feed the capability map.
+The capability map is drafted and has been reviewed by the software architect and the agile delivery
+consultant ([map](https://github.com/vishalkhondre/speckit-aisdlc/blob/main/docs/research/capability-map.md)).
+It is a proposal until it is decided. Deployment is out of scope (D-028).
 
-1. Draft the capability map, using the sweep and the upstream contract research.
-2. Decide the capability map.
+1. Decide the capability map, including whether documentation reconciliation is in the MVP or the next phase.
+2. Then phase 3: an empty bundle, configuration, and compatibility CI.
 
-Open questions waiting on that work include the workflow names, whether deploy and a release flow
-are in scope, and confirming the provisional supported Spec Kit range (D-024) in phase 3.
+Still open: the workflow names, and confirming the provisional supported Spec Kit range (D-024) in phase 3.
 
 Live work items: [project board](https://github.com/users/vishalkhondre/projects/2). Current detail: [`docs/context/STATUS.md`](https://github.com/vishalkhondre/speckit-aisdlc/blob/main/docs/context/STATUS.md).

@@ -26,7 +26,11 @@ Reviewed by `software-architect`: `docs/reviews/2026-10-01-upstream-contract-sof
 - Command names must match `^speckit\.[a-z0-9-]+\.[a-z0-9-]+$`, i.e. `speckit.{extension-id}.{command}`.
 - Aliases follow the same pattern, **must use the extension's own namespace**, and must not shadow
   core or installed extension commands. Short un-namespaced aliases (e.g. `speckit.verify`) are
-  therefore not valid in 1.0.
+  therefore not valid in 1.0 **according to the docs**.
+- **Docs and code disagree:** the 1.0.13 source does not enforce the alias namespace
+  (`src/specify_cli/extensions/__init__.py`, comment "no pattern enforcement on aliases — they are
+  intentionally free-form …"), and installed community extensions already register `/speckit-verify` and
+  `/speckit-deploy`. aisdlc follows the docs: it defines no aliases and never relies on short names (D-026).
 - Community catalog (`extensions/catalog.community.json`): 176 extensions. The ids `verify`,
   `review`, `ship`, `bugfix`, `security-review` are already taken; `sdlc` and `aisdlc` are free.
 

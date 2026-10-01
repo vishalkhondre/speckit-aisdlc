@@ -29,3 +29,7 @@ alternatives, is in [`docs/context/DECISIONS.md`](https://github.com/vishalkhond
 | D-022 | Board conventions: issues are added automatically, status columns Backlog to Done, re-runnable setup. |
 | D-023 | Unattended runs: approval gates live in workflows, each command step is followed by a check that its expected file exists, and aisdlc's commands only ask for missing information. |
 | D-024 | Supported Spec Kit versions: 1.0.5 up to (not including) 2.0. Provisional until phase 3; tested on the oldest supported version, the latest release, and on a schedule. |
+| D-025 | Ideas from Extended Flow are borrowed and rewritten; nothing is copied verbatim. |
+| D-026 | aisdlc commands use only their full names; no short aliases. |
+| D-027 | Each phase leaves a short "brief" for the next; decisions are logged per feature. |
+| D-028 | aisdlc stops at a ready-to-merge pull request; deployment stays with CI or organisation presets. |
