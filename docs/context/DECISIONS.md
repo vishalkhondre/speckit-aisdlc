@@ -342,3 +342,55 @@ against the latest release (hard rule 6).
 validation in patch releases (#4191, #4477, #4558), so testing only on aisdlc changes is not enough.
 
 **Review:** `docs/reviews/2026-10-01-upstream-contract-software-architect.md` (findings A6, A9).
+
+---
+
+### D-025 — Extended Flow material: ideas only, no verbatim copying
+**Status:** accepted · **Date:** 2026-10-01 · **Session:** Claude chat
+
+**Decision:** Extended Flow has no LICENSE file (MIT is declared only in its README and manifests). The user
+chose not to contact the author and not to add a `NOTICE` entry. Therefore aisdlc **borrows Extended Flow's
+ideas and designs only and never copies its text, prompts, templates or code verbatim**; aisdlc writes its
+own versions.
+
+**Why:** MIT's main condition is keeping the copyright notice with copied material. Ideas and designs are not
+covered by the licence, so writing our own versions needs no notice.
+
+**Review:** `docs/reviews/2026-10-01-prior-art-sweep-prior-art-researcher.md` (cross-cutting finding 3).
+
+---
+
+### D-026 — aisdlc defines no command aliases
+**Status:** accepted · **Date:** 2026-10-01 · **Session:** Claude chat
+
+**Decision:** aisdlc uses only full `speckit.aisdlc.<command>` names and defines no aliases. aisdlc never relies
+on un-namespaced names such as `speckit.verify`.
+
+**Why:** Spec Kit's docs require aliases to stay in the extension's namespace, but the 1.0.13 source does not
+enforce it, and other extensions already register `/speckit-verify` and `/speckit-deploy`. Following the docs
+keeps aisdlc safe if enforcement arrives and avoids collisions. Recorded in `upstream-spec-kit.md`.
+
+**Refines:** D-006 (whose impact line assumed the documented rule is enforced).
+
+---
+
+### D-027 — "Briefs", not "handoffs"
+**Status:** accepted · **Date:** 2026-10-01 · **Session:** Claude chat
+
+**Decision:** The short note each phase leaves for the next is a **brief**. Per feature: `brief.md` (latest
+brief), `decisions.md` (append-only decision log) and a small state file under `specs/<feature>/.aisdlc/`.
+Exact file names are settled in the capability map.
+
+**Why:** Upstream command frontmatter already uses `handoffs:` to mean "suggested next command".
+
+---
+
+### D-028 — Deploy is out of aisdlc's core
+**Status:** accepted · **Date:** 2026-10-01 · **Session:** Claude chat
+
+**Decision:** aisdlc's flows end at **ship**: a pull request ready to merge, with its evidence. aisdlc has no
+deploy command or workflow. Release-readiness or deployment-record steps, if wanted, come from organisation
+presets. Revisit after v0.1.
+
+**Why:** Upstream's SDLC guide leaves deployment to plain CI; the sweep found nothing worth depending on;
+environment promotion is organisation-specific; it was the least proven idea in either source project.
