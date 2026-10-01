@@ -234,7 +234,7 @@ own work as issue → branch → PR also exercises aisdlc's own flow (D-011, D-0
 **Decision:** No board work depends on a local `gh` login. Claude Code (cloud) creates issues through its
 GitHub connection; the project's built-in workflows add them to the board and move closed issues and
 merged PRs to Done; setup needing labels, milestones or project access runs as a manually triggered
-GitHub Action using the `BOARD_TOKEN` secret (classic PAT with `project` + `public_repo`/`repo` scopes).
+GitHub Action using the existing `WIKI_TOKEN` secret, extended by the user with the `project` scope (one classic PAT shared with the wiki publish workflow).
 
 **Refines:** D-017 — the division of roles is unchanged; only the mechanism changes (D-017 assumed `gh`
 in Claude Code, which has no valid login in the cloud container).

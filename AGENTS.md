@@ -57,7 +57,7 @@ The repo is the single source of truth. Chat history and per-product memory are 
   drafts issues; the user prioritises and resolves `needs-decision` items.
 - **Board moves are automated, not done by agents** (D-018): the project's built-in workflows add new
   repo issues to the board and move closed issues and merged PRs to Done. Anything needing labels,
-  milestones or project access runs as a GitHub Action with the `BOARD_TOKEN` secret
+  milestones or project access runs as a GitHub Action with the `WIKI_TOKEN` secret (one PAT with `project` + `public_repo`)
   (`.github/workflows/board-bootstrap.yml` runs `scripts/board/bootstrap.sh`). No local `gh` is required.
 - Branch per issue: `feature/<issue-number>-<slug>`. PRs must say `Closes #<issue-number>`.
 - `STATUS.md` links to the board instead of repeating it.

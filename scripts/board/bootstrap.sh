@@ -8,7 +8,7 @@
 # (matched by exact title) are skipped.
 #
 # Normally run by the "Bootstrap project board" GitHub Action
-# (.github/workflows/board-bootstrap.yml), which supplies GH_TOKEN from the BOARD_TOKEN secret.
+# (.github/workflows/board-bootstrap.yml), which supplies GH_TOKEN from the WIKI_TOKEN secret.
 # To run elsewhere: gh CLI logged in with the `repo` and `project` scopes, then
 #   bash scripts/board/bootstrap.sh
 

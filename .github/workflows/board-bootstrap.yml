@@ -1,12 +1,12 @@
 name: Bootstrap project board
 
-# Runs scripts/board/bootstrap.sh in GitHub's cloud (D-017): labels, milestones for
+# Runs scripts/board/bootstrap.sh in GitHub's cloud (D-018): labels, milestones for
 # phases 0-7, the first issues, and adds them to the user's Project #2.
 # Safe to re-run: existing labels are updated; existing milestones and issues are skipped.
 #
-# Requires a repository secret BOARD_TOKEN: a classic personal access token with the
-# `project` scope plus `public_repo` (public repo) or `repo` (private repo). The built-in
-# GITHUB_TOKEN cannot access user-owned projects.
+# Uses the repository secret WIKI_TOKEN (shared with wiki-sync.yml): a classic personal
+# access token with the `project` scope plus `public_repo` (public repo) or `repo` (private
+# repo). The built-in GITHUB_TOKEN cannot access user-owned projects.
 
 on:
   workflow_dispatch:
@@ -23,14 +23,14 @@ jobs:
 
       - name: Check token
         env:
-          BOARD_TOKEN: ${{ secrets.BOARD_TOKEN }}
+          TOKEN: ${{ secrets.WIKI_TOKEN }}
         run: |
-          if [ -z "$BOARD_TOKEN" ]; then
-            echo "::error::Repository secret BOARD_TOKEN is not set. See the header of this workflow."
+          if [ -z "$TOKEN" ]; then
+            echo "::error::Repository secret WIKI_TOKEN is not set. See the header of this workflow."
             exit 1
           fi
 
       - name: Run bootstrap
         env:
-          GH_TOKEN: ${{ secrets.BOARD_TOKEN }}
+          GH_TOKEN: ${{ secrets.WIKI_TOKEN }}
         run: bash scripts/board/bootstrap.sh
