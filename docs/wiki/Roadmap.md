@@ -36,6 +36,6 @@ Phase 3: skeleton and compatibility CI. Six issues are drafted, in suggested bui
 6. **Confirm the supported Spec Kit range.** Once CI runs, confirm or adjust the provisional range
    (D-024). This needs a decision from the user.
 
-Still open: the workflow names (issue #5), to settle in phase 4.
+Workflow names are settled (D-038): `aisdlc-feature`, `aisdlc-bugfix`, `aisdlc-quick`, `aisdlc-onboard`.
 
 Live work items: [project board](https://github.com/users/vishalkhondre/projects/2). Current detail: [`docs/context/STATUS.md`](https://github.com/vishalkhondre/speckit-aisdlc/blob/main/docs/context/STATUS.md).

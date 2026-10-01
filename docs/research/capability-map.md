@@ -136,7 +136,7 @@ Composition onto aisdlc commands is materialised at install time; CI (#3) checks
 - **Config and scripts:** `.specify/extensions/aisdlc/aisdlc-config.yml`, `local-config.yml`,
   env `SPECKIT_AISDLC_*`; scripts `aisdlc-*.py` (Python 3 stdlib); templates `aisdlc-*`;
   decision IDs in user projects `DEC-####`.
-- **Workflows:** names still open (#5).
+- **Workflows:** `aisdlc-feature`, `aisdlc-bugfix`, `aisdlc-quick`, `aisdlc-onboard` (D-038).
 
 ## Decisions on the open questions (#10)
 
@@ -149,7 +149,7 @@ Composition onto aisdlc commands is materialised at install time; CI (#3) checks
 | 5 | Quick review and the constitution | Yes (D-034) |
 | 6 | Config format | Flat YAML subset, stdlib parser (D-035) |
 | 7 | Workflow testing in CI | Deterministic steps on fixtures in CI; agent steps in a manual or scheduled job (D-036) |
-| 8 | Workflow names | Still open (#5), to settle in phase 4 |
+| 8 | Workflow names | Settled by D-038: `aisdlc-feature`, `aisdlc-bugfix`, `aisdlc-quick`, `aisdlc-onboard` |
 
 ## How the reviews were addressed
 

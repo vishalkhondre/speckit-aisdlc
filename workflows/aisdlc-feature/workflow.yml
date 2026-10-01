@@ -1,7 +1,7 @@
 schema_version: "1.0"
 
 workflow:
-  # Placeholder id until #5 names the workflows.
+  # Name fixed by D-038.
   id: "aisdlc-feature"
   name: "aisdlc feature flow (skeleton)"
   version: "0.0.1"

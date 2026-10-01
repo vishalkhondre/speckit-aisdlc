@@ -7,20 +7,20 @@ to merge. Every aisdlc command can also be run by hand as an interactive command
 
 > **Status: accepted design, not yet built.** This page follows the accepted
 > [capability map](https://github.com/vishalkhondre/speckit-aisdlc/blob/main/docs/research/capability-map.md)
-> (D-029). Nothing is released yet. Workflow names are still placeholders (issue #5), so this page
-> says "the feature flow", "the bugfix flow" and so on.
+> (D-029). Nothing is released yet. Each flow is a Spec Kit workflow, run with
+> `specify workflow run <name>`; the names are fixed by D-038.
 
-| Flow | Use it for | Arrives in |
-|---|---|---|
-| Feature | A new capability, greenfield or in an existing codebase | Phase 4 (MVP) |
-| Bugfix | A defect in existing behaviour | Phase 5 (later) |
-| Quick change | A small change with no new requirement | Phase 5 (later) |
-| Onboarding | Preparing an existing codebase before its first feature | Phase 5 (later) |
+| Flow | Workflow | Use it for | Arrives in |
+|---|---|---|---|
+| Feature | `aisdlc-feature` | A new capability, greenfield or in an existing codebase | Phase 4 (MVP) |
+| Bugfix | `aisdlc-bugfix` | A defect in existing behaviour | Phase 5 (later) |
+| Quick change | `aisdlc-quick` | A small change with no new requirement | Phase 5 (later) |
+| Onboarding | `aisdlc-onboard` | Preparing an existing codebase before its first feature | Phase 5 (later) |
 
 Until the quick change flow ships, small fixes use a plain branch and pull request. The feature flow
 is for features.
 
-## Feature flow (phase 4, MVP)
+## Feature flow — `aisdlc-feature` (phase 4, MVP)
 
 ```mermaid
 flowchart LR
@@ -51,7 +51,7 @@ flowchart LR
   carries the spec path, the verdict, requirement coverage, a decision summary and a "documentation
   possibly affected" note (until docs reconciliation arrives in phase 5). Specs are kept.
 
-## Bugfix flow (phase 5, later)
+## Bugfix flow — `aisdlc-bugfix` (phase 5, later)
 
 ```mermaid
 flowchart LR
@@ -64,7 +64,7 @@ flowchart LR
 Built around Spec Kit's own `bug` commands. Diagnosis, fix and verification stay separate, and only a
 verified fix can be shipped. Spec Kit's own bugfix workflow stays usable on its own.
 
-## Quick change flow (phase 5, later)
+## Quick change flow — `aisdlc-quick` (phase 5, later)
 
 ```mermaid
 flowchart LR
@@ -78,7 +78,7 @@ For changes that fit the size rule below. The quick-scope review includes a cons
 (D-034). The flow writes a minimal spec (the instruction and an acceptance line) so Spec Kit tools that
 expect a spec still work.
 
-## Onboarding flow (phase 5, later)
+## Onboarding flow — `aisdlc-onboard` (phase 5, later)
 
 ```mermaid
 flowchart LR

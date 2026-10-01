@@ -83,7 +83,7 @@ The repo is the single source of truth. Chat history and per-product memory are 
 | `.claude/agents/` | Specialist subagents (D-016) |
 | `extension/` | The `aisdlc` extension: `extension.yml`, `commands/speckit.aisdlc.<command>.md`, later `scripts/aisdlc-*.py` |
 | `preset/` | The `aisdlc` preset: `preset.yml`, `templates/aisdlc-*.md`, later prepend/append compositions of core commands |
-| `workflows/<id>/` | One directory per aisdlc workflow (`workflow.yml`); ids are placeholders until #5 |
+| `workflows/<id>/` | One directory per aisdlc workflow (`workflow.yml`): `aisdlc-feature`, later `aisdlc-bugfix`, `aisdlc-quick`, `aisdlc-onboard` (D-038) |
 | `bundle/bundle.yml` | Bundle manifest: extension, preset and workflows at one version |
 | `scripts/dev/install-local.sh` | Installs aisdlc from this checkout into a Spec Kit project |
 | `scripts/board/bootstrap.sh` | Re-runnable setup of labels, milestones and first issues |
