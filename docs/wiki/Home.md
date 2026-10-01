@@ -17,8 +17,11 @@ instead of replacing them, and its CI tests against new upstream versions before
 
 ## Where the project is now
 
-**Phase: discovery and design.** No code has been released yet. See [Roadmap](Roadmap) for the plan
-and [Decisions](Decisions) for what has been agreed so far.
+**Phase: design, moving into the capability map.** No code has been released yet. Discovery is
+done, and the parts of Spec Kit 1.0 that aisdlc may rely on (its public contract) are now pinned at
+v1.0.13. Next is the capability map: deciding which capabilities aisdlc keeps, adapts or drops.
+
+See [Roadmap](Roadmap) for the plan and [Decisions](Decisions) for what has been agreed so far.
 
 ## Start here
 
