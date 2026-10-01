@@ -4,7 +4,7 @@ extension:
   id: "aisdlc"
   name: "aisdlc"
   version: "0.0.1"
-  description: "Generic SDLC add-on for Spec Kit: setup, start, verify and ship around the core flow, with durable specs."
+  description: "Generic SDLC add-on for Spec Kit (skeleton): composes with the core flow and keeps specs durable."
   author: "speckit-aisdlc contributors"
   repository: "https://github.com/vishalkhondre/speckit-aisdlc"
   license: "MIT"

@@ -22,7 +22,9 @@ provides:
   presets:
     - id: "aisdlc"
       version: "0.0.1"
-      priority: 10
+      # Deliberately weak (higher number = lower precedence) so an organisation
+      # preset at the default priority 10 always ranks above aisdlc.
+      priority: 50
       # Required by bundle validation, but only recorded and displayed: each
       # entry's own `strategy` in preset/preset.yml is what Spec Kit applies.
       # `append` states the intent — aisdlc composes, never replaces (hard rule 2).

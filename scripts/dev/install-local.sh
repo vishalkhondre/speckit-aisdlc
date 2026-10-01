@@ -6,6 +6,10 @@
 # directory, then the bundle is installed over them (it records itself and
 # skips the components as already present).
 #
+# Fresh projects only: `extension add` and `preset add` refuse an id that is
+# already installed. To reinstall, remove the workflow, preset and extension
+# (in that order) first.
+#
 # Usage: scripts/dev/install-local.sh [project-dir]   (default: current dir)
 # Requires: `specify` on PATH (or SPECIFY=/path/to/specify), project already
 # initialised with `specify init`.
@@ -20,6 +24,6 @@ cd "$project"
 [ -d .specify ] || { echo "Not a Spec Kit project: $(pwd) (run 'specify init' first)" >&2; exit 1; }
 
 "$specify" extension add --dev "$repo/extension"
-"$specify" preset add --dev "$repo/preset"
+"$specify" preset add --dev "$repo/preset" --priority 50   # same as bundle.yml
 "$specify" workflow add --dev "$repo/workflows/aisdlc-feature"
 "$specify" bundle install "$repo/bundle"

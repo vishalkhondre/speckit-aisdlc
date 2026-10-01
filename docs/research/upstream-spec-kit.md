@@ -297,6 +297,7 @@ aisdlc has no code yet. Design assumptions already made, each to keep (and test)
 | Env inheritance into dispatched agents; `SPECKIT_INTEGRATION_<KEY>_EXTRA_ARGS` | Only if D-010 option 4 is chosen |
 | Which integrations support CLI dispatch (no documented list) | Test in CI for each supported integration |
 | `prompt` step default timeout of 300 s | Only if D-010 option 3 is chosen; set `timeout` explicitly |
+| Bundle `presets[].strategy` is required by validation but only recorded and displayed, never applied; per-entry strategies in `preset.yml` are authoritative (`bundles/manifest.py`, `records.py`, `command_info.py`) | **Keep and test (#19):** assert `specify preset resolve aisdlc-brief` returns the preset's file unchanged |
 
 Keep off this list entirely: the agent runtime `events` schema, `state.json` field layout, custom step
 types, and any `specify_cli` Python import.
