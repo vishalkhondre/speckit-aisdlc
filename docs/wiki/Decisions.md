@@ -21,3 +21,4 @@ alternatives, is in [`docs/context/DECISIONS.md`](https://github.com/vishalkhond
 | D-014 | One constitution, at `.specify/memory/constitution.md`. |
 | D-015 | Which extra lifecycle commands to add is decided in the capability map. |
 | D-016 | Specialist review agents check proposals before decisions; this wiki is published from the repo. |
+| D-017 | Work is tracked as GitHub issues on a project board; Claude Code keeps the board up to date. |

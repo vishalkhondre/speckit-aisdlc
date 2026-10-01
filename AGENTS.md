@@ -49,6 +49,16 @@ The repo is the single source of truth. Chat history and per-product memory are 
 - Typical split: Claude chat for research, design and trade-offs; Claude Code for implementation,
   tests and CI. Either may do either.
 
+## Work tracking (D-017)
+
+- Work items are GitHub issues, tracked on [Project #2](https://github.com/users/vishalkhondre/projects/2);
+  milestones are roadmap phases. `scripts/board/bootstrap.sh` creates labels, milestones and the first issues.
+- **Claude Code is the only agent that writes to issues and the board** (`gh` with the `project`
+  scope). Claude chat drafts issues; the user prioritises and resolves `needs-decision` items.
+- Branch per issue: `feature/<issue-number>-<slug>`. PRs must say `Closes #<issue-number>`; GitHub's
+  project workflows move merged and closed items to Done.
+- `STATUS.md` links to the board instead of repeating it.
+
 ## Specialist agents (`.claude/agents/`, D-016)
 
 | Agent | Role | Writes |
@@ -66,6 +76,7 @@ The repo is the single source of truth. Chat history and per-product memory are 
 | `CLAUDE.md` | Imports this file for Claude Code |
 | `LICENSE`, `NOTICE` | MIT licence (D-009); attribution for any third-party material |
 | `.claude/agents/` | Specialist subagents (D-016) |
+| `scripts/board/bootstrap.sh` | One-time (re-runnable) setup of labels, milestones and first issues |
 | `.github/workflows/wiki-sync.yml` | Publishes `docs/wiki/` to the GitHub wiki on push to `main` |
 | `docs/context/STATUS.md` | Current state, last session, next actions, open questions |
 | `docs/context/DECISIONS.md` | Append-only decision log (`D-###`) |

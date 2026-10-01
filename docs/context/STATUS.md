@@ -4,42 +4,29 @@ Overwrite this file at the end of every session.
 
 **Last updated:** 2026-10-01 · **By:** Claude chat · **Phase:** Discovery and design (no code yet)
 
+**Work items:** [Project #2](https://github.com/users/vishalkhondre/projects/2) — the board is the list of
+what's in flight; this file is the narrative handoff (D-017).
+
 ## Where we are
 
 - Upstream Spec Kit and Extended Flow (v0.18.0) have been analysed and their layering mechanisms
   verified by installing them; findings are in `docs/research/`. An internal enterprise Spec Kit layer
   was also analysed; that analysis is private and is not kept in this repo.
-- Accepted decisions D-001 to D-016 (see `docs/wiki/Decisions.md` for a one-line summary of each).
-- Added this session: MIT `LICENSE` and `NOTICE`; four specialist agents in `.claude/agents/`
-  (prior-art researcher, software architect, agile delivery consultant, documentation writer);
-  `docs/reviews/`; starter wiki pages in `docs/wiki/`; `.github/workflows/wiki-sync.yml`.
-
-## Setup the user must do (once)
-
-1. **Initialise the wiki:** open the repo's Wiki tab and save any first page (GitHub only creates the
-   wiki's git repository after that).
-2. **Create `WIKI_TOKEN`:** a classic personal access token with `public_repo` scope (or `repo` if the
-   repo becomes private), saved as repository secret `WIKI_TOKEN` (Settings → Secrets and variables →
-   Actions). Then run the "Publish wiki" workflow once, or push a change under `docs/wiki/`.
+- Accepted decisions D-001 to D-017 (one-line summaries in `docs/wiki/Decisions.md`).
+- In place: handshake docs, MIT licence, four specialist agents (`.claude/agents/`), the wiki published
+  from `docs/wiki/` (first publish succeeded), and `scripts/board/bootstrap.sh` for work tracking.
 
 ## Next actions
 
-1. **Pin upstream 1.0's public contract:** manifest schemas, composition strategies
-   (prepend/append/replace), hook events, workflow step types and engine run-state, whether the engine
-   can apply behaviour per run (D-010), and what changed or was deprecated between 0.7 and 1.0. Write
-   it to `docs/research/upstream-spec-kit.md`. Have `software-architect` review it.
-2. **Prior-art sweep:** run `prior-art-researcher` across the candidate capabilities (verify, review,
-   secure, deploy, retrospective, guard, router, ship, brownfield onboarding, remediate, docs
-   reconciliation, quick flow) before drafting the capability map.
-3. **Capability map:** each candidate → keep / adapt / drop, target mechanism, organisation-preset
-   extension point, and de-branded name. Save as `docs/research/capability-map.md`; review with
-   `software-architect` and `agile-delivery-consultant`; the user decides.
+1. **Bootstrap the board (Claude Code):** `gh auth refresh -s project` if needed, then
+   `bash scripts/board/bootstrap.sh`. It creates labels, milestones for phases 0–7, and six issues for
+   phases 0–2, and adds them to the project. Re-running it is safe.
+2. **Board setup (user):** issue *Set up the project board views and built-in workflows*.
+3. **Pin the Spec Kit 1.0 public contract** (issue of the same name, Phase 1).
+4. **Prior-art sweep**, then **draft the capability map** (Phase 2 issues).
 
 ## Open questions
 
-1. **Per-run unattended behaviour (D-010):** can the workflow engine apply a preamble or flag only
-   inside workflow runs? Answered by next action 1.
-2. **Workflow names:** `aisdlc-feature`, `aisdlc-bugfix`, `aisdlc-quick`, `aisdlc-onboard` are
-   placeholders.
-3. **Release flow (candidate):** security scan → deployment spec → retrospective. Decide in the
-   capability map.
+- Workflow names — tracked as issue *Name the aisdlc workflows* (`needs-decision`).
+- Release flow in scope? — decided with the capability map.
+- Per-run unattended behaviour (D-010) — answered by the upstream contract research.
