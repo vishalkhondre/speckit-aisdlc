@@ -35,13 +35,28 @@ conventions, tracker defaults) lives in separate presets outside this repo (D-00
 
 The repo is the single source of truth. Chat history and per-product memory are not.
 
-- **Start of session:** read `docs/context/STATUS.md`, then `docs/context/DECISIONS.md`.
-- **End of session:** rewrite `docs/context/STATUS.md` (overwrite, do not append) and append any new
-  decisions to `docs/context/DECISIONS.md`. Commit both.
+- **Start of session:** `git pull`, then read `docs/context/STATUS.md` and `docs/context/DECISIONS.md`.
+- **One editor at a time.** Only one product (Claude Code or Claude chat) edits the repo at once. If
+  that can't be guaranteed, work on a branch and merge through a pull request.
+- **Before a significant decision:** run the relevant reviewers in `.claude/agents/` and save their
+  reports to `docs/reviews/` (see `docs/reviews/README.md`). In Claude chat, read the agent file and
+  apply it as the review instructions.
+- **End of session:** rewrite `docs/context/STATUS.md` (overwrite, do not append), append any new
+  decisions to `docs/context/DECISIONS.md`, and run `documentation-writer` if decisions, status or
+  design changed. Commit everything together.
 - **Only the user makes decisions.** Agent recommendations go in STATUS.md as open questions or in
   DECISIONS.md with status `proposed` until the user accepts them.
 - Typical split: Claude chat for research, design and trade-offs; Claude Code for implementation,
   tests and CI. Either may do either.
+
+## Specialist agents (`.claude/agents/`, D-016)
+
+| Agent | Role | Writes |
+|---|---|---|
+| `prior-art-researcher` | Does a capability already exist? Adopt, depend, borrow, or build | Nothing (report returned) |
+| `software-architect` | Hard rules, upstream contract, upgrade safety, extension points | Nothing (report returned) |
+| `agile-delivery-consultant` | Fit with real team delivery; framework-neutral, SAFe-fluent | Nothing (report returned) |
+| `documentation-writer` | Human-facing pages published to the GitHub wiki | `docs/wiki/` only |
 
 ## Repo map
 
@@ -49,9 +64,14 @@ The repo is the single source of truth. Chat history and per-product memory are 
 |---|---|
 | `AGENTS.md` | This file — always-on context |
 | `CLAUDE.md` | Imports this file for Claude Code |
+| `LICENSE`, `NOTICE` | MIT licence (D-009); attribution for any third-party material |
+| `.claude/agents/` | Specialist subagents (D-016) |
+| `.github/workflows/wiki-sync.yml` | Publishes `docs/wiki/` to the GitHub wiki on push to `main` |
 | `docs/context/STATUS.md` | Current state, last session, next actions, open questions |
 | `docs/context/DECISIONS.md` | Append-only decision log (`D-###`) |
-| `docs/research/` | Analyses of upstream Spec Kit and Extended Flow |
+| `docs/research/` | Analyses of upstream Spec Kit and Extended Flow; later the capability map |
+| `docs/reviews/` | Specialist agent review reports |
+| `docs/wiki/` | Source of the GitHub wiki — never edit the wiki directly |
 
 Source layout (extension, presets, workflows, bundle) will be added here once decided.
 

@@ -1,0 +1,17 @@
+speckit-aisdlc
+Copyright (c) 2026 Vishal Khondre
+Licensed under the MIT License (see LICENSE).
+
+Third-party material
+--------------------
+
+Any code, prompts or templates copied or adapted from another project must be
+listed here with its source, licence and copyright notice (AGENTS.md hard rule 7).
+
+None yet.
+
+Expected sources (both MIT):
+- GitHub Spec Kit — https://github.com/github/spec-kit — Copyright (c) GitHub, Inc.
+- Spec-Kit Extended Flow — https://github.com/markuswondrak/spec-kit-extended-flow — Copyright (c) Markus Wondrak
+
+Copy the exact copyright line from each source's LICENSE file when material is added.

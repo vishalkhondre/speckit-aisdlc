@@ -116,3 +116,88 @@ organisation-specific defaults live in separate presets).
 
 **Impact:** Adapted material gets neutral names (e.g. an `aisdlc`-scoped state folder and config
 keys, `PROJ-123`-style tracker examples). The private analysis of that layer stays out of this repo.
+
+---
+
+### D-009 — MIT licence
+**Status:** accepted · **Date:** 2026-10-01 · **Session:** Claude chat
+
+**Decision:** aisdlc is released under the MIT licence.
+
+**Why:** Matches Spec Kit and Extended Flow, keeps reuse and attribution simple (`NOTICE`).
+
+---
+
+### D-010 — Workflows own the approval gates; commands stay interactive
+**Status:** accepted · **Date:** 2026-10-01 · **Session:** Claude chat
+
+**Decision:** Human approval gates live in the workflows. Commands stay interactive when run by hand
+(D-005). An unattended preamble is added only if the workflow engine can apply it per run rather than
+to every invocation.
+
+**Open:** whether the engine supports per-run behaviour — part of the upstream contract research.
+
+---
+
+### D-011 — Pluggable issue tracker
+**Status:** accepted · **Date:** 2026-10-01 · **Session:** Claude chat
+
+**Decision:** Issue → branch → PR automation goes through a tracker interface. GitHub issues are built
+in; other trackers (e.g. Jira via MCP) are supplied by organisation presets.
+
+---
+
+### D-012 — Configurable branch naming
+**Status:** accepted · **Date:** 2026-10-01 · **Session:** Claude chat
+
+**Decision:** Branch names follow a configurable pattern (prefix, tracker key, slug), defaulting to
+`feature/<key>-<slug>`.
+
+---
+
+### D-013 — Per-feature session state
+**Status:** accepted · **Date:** 2026-10-01 · **Session:** Claude chat
+
+**Decision:** Session state (gates, decision log, handoffs) is stored per feature under
+`specs/<feature>/`, so parallel feature branches never collide.
+
+---
+
+### D-014 — Single constitution
+**Status:** accepted · **Date:** 2026-10-01 · **Session:** Claude chat
+
+**Decision:** One constitution, at upstream's location `.specify/memory/constitution.md`. Anything that
+generates or proposes constitution content (e.g. brownfield onboarding) writes there, with human review.
+
+---
+
+### D-015 — Lifecycle commands decided in the capability map
+**Status:** accepted · **Date:** 2026-10-01 · **Session:** Claude chat
+
+**Decision:** Which lifecycle commands aisdlc adds beyond upstream (verify, review, secure, deploy,
+retrospective, guard, router, ship, brownfield scout, remediate, …) is decided in
+`docs/research/capability-map.md`, after prior-art review.
+
+---
+
+### D-016 — Specialist review agents and a published wiki
+**Status:** accepted · **Date:** 2026-10-01 · **Session:** Claude chat
+
+**Decision:** The repo carries four Claude Code subagents in `.claude/agents/`:
+- `prior-art-researcher`, `software-architect`, `agile-delivery-consultant` — read-only reviewers
+  (no write tools). Before a significant decision, the relevant reviewers assess the proposal and
+  their reports are saved to `docs/reviews/`. They advise; the user decides.
+- `documentation-writer` — maintains human-facing pages in `docs/wiki/` only.
+
+`docs/wiki/` is published one way to the GitHub wiki by `.github/workflows/wiki-sync.yml` on every
+push to `main`. The wiki is never edited directly.
+
+**Why:** The spec-driven tooling space is crowded; independent, evidence-based review reduces rework.
+One-way publishing keeps the repo the single source of truth.
+
+**Alternatives rejected:**
+- Agents writing directly to the wiki — drifts from the repo, two sources of truth.
+
+**Limits:** All agents run on the same model and share its blind spots; key decisions still benefit
+from human expert review. The SAFe-fluent consultant keeps aisdlc framework-neutral; SAFe-specific
+behaviour belongs in organisation presets.

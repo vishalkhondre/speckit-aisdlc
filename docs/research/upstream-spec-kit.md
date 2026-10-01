@@ -1,7 +1,7 @@
 # Upstream Spec Kit — research notes
 
 Source: github/spec-kit. Verified 2026-10-01 by installing `specify-cli` **1.0.13** from PyPI and
-initialising a fresh project. Sections marked *TODO* are next-action #2 in STATUS.md.
+initialising a fresh project. Sections marked *TODO* are next action 1 in STATUS.md.
 
 ## Current shape
 
