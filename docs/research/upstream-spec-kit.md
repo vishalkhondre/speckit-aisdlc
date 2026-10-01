@@ -4,6 +4,8 @@ Source: github/spec-kit. Verified 2026-10-01 by installing `specify-cli` **1.0.1
 initialising a fresh project. The *Public contract* section (issue #6) was pinned on 2026-10-01 from
 the `v1.0.13` tag (`f1a548a`); links below point at that tag. "Documented" means stated in upstream
 docs; "source" means read in the code only — treat source-only behaviour as *not* contract.
+Reviewed by `software-architect`: `docs/reviews/2026-10-01-upstream-contract-software-architect.md`
+(findings A1–A9 applied).
 
 ## Current shape
 
@@ -67,11 +69,19 @@ docs; "source" means read in the code only — treat source-only behaviour as *n
 - `provides`: `commands` (`name` = `speckit.<ext-id>.<cmd>`, `file`, `description`, `aliases` in the same
   namespace, must not shadow core or installed commands); `templates` and `scripts` (plain slug names,
   **always `replace`** — a `strategy` key is a `ValidationError`); `config` (`name`, `template`,
-  `required`).
+  `required`). Because extensions rank **above core** in resolution, an extension template that shares a
+  core name (e.g. `spec-template`) silently replaces it — a hard-rule-2 trap.
 - Top-level `hooks` (see below), `events` (agent runtime events, see below), `tags`, `defaults`.
 - At least one of `provides.commands|templates|scripts`, `hooks`, `events` is required.
 - Config layers: manifest `defaults` → `.specify/extensions/<id>/<id>-config.yml` →
-  `<id>-config.local.yml` (gitignored) → env `SPECKIT_<EXT>_<KEY>`. For us: `SPECKIT_AISDLC_*`.
+  `<id>-config.local.yml` (gitignored) → env `SPECKIT_<EXT>_<KEY>` (for us `SPECKIT_AISDLC_*`).
+  This is a **documented convention, not an engine service**: [EXT-DEV] tells commands to do the merge
+  themselves (its example uses `yq`/`jq`). aisdlc's own scripts must implement it, and a missing
+  `yq`/`jq`/Python is a failure mode.
+- Command bodies: `$ARGUMENTS`; `scripts:` frontmatter with `{SCRIPT}`; and the
+  `__SPECKIT_COMMAND_<NAME>__` token, rendered per integration, for referring to another command
+  (needed so aisdlc commands can point at each other on both slash-command and skills agents) [EXT-DEV].
+  `provides.scripts[].runtimes` is informational only.
 - Python classes (`ExtensionManager`, `HookExecutor`, …) are documented in [EXT-API] but are
   engine API, not something an extension can call at runtime — hard rule 3 applies.
 
@@ -80,7 +90,8 @@ docs; "source" means read in the code only — treat source-only behaviour as *n
 - `preset`: `id`, `name`, `version`, `description`, `author`, `repository`, `license`.
 - `requires`: `speckit_version`; optional `extensions` — bare id or `{id, version, required}`. Without a
   required extension the preset still installs and silently falls through to core; declaring it makes
-  `preset add` say so (added in 1.0.4, #4250).
+  `preset add` say so (added in 1.0.4, #4250). A missing, stale or version-mismatched dependency is
+  a **warning, not a failure** — the install still succeeds [PRE-PUB].
 - `provides.templates[]` (all file kinds live in this one list): `type` (`template` | `command` |
   `script`), `name`, `file`, `description`, optional `replaces`, optional `strategy`.
 - Duplicate `name`+`type` entries are rejected (#4191) → one preset can compose a given command only
@@ -115,7 +126,7 @@ the new integration. `specify integration upgrade` re-registers presets after re
   `constitution`, `taskstoissues`, and also `converge` (present in the templates, missing from the
   API reference list).
 - Hook fields: `command`, `priority` (≥1, default 10), `optional` (default `true`), `prompt`,
-  `description`, `condition`. An event takes one mapping or a list.
+  `description`, `condition`; the registry adds `enabled`. An event takes one mapping or a list.
 - **Protocol:** registered into `.specify/extensions.yml`. Each core command *template* instructs the
   agent to read that file and, per hook: optional → print a suggestion; mandatory
   (`optional: false`) → print `EXECUTE_COMMAND: <command>` and invoke it, waiting for the result.
@@ -123,11 +134,12 @@ the new integration. `specify integration upgrade` re-registers presets after re
   core command templates "supports" it, with LLM-level reliability.
 - **Caveats (documented):** templates do **not** evaluate `condition` — hooks with a non-empty
   condition are *skipped*; templates surface hooks in YAML order and **ignore `priority`**;
-  `auto_execute_hooks` is reserved and unused. Extension commands (e.g. `bug.*`) define no events.
+  `auto_execute_hooks` is reserved and unused. Upstream docs conflict here: [EXT-API] says hooks run by
+  ascending priority, [EXT-REF] says templates ignore it — the templates are what actually runs. Extension commands (e.g. `bug.*`) define no events.
 - **Agent runtime events** (`events:` manifest key; canonical `session_start`, `pre_tool_use`,
   `post_tool_use`, `user_prompt_submit`, `stop`, `session_end`; added 0.15.0–0.16.0, #3704/#3934) install
-  native agent hooks via a generated `.specify/events.py`. Only named in [EXT-DEV]; schema is
-  source-only (`src/specify_cli/events/`). **Not yet a contract to build on.**
+  native agent hooks via a generated `.specify/events.py`. [EXT-DEV] only names the `events` key; the
+  event names and schema are source-only (`src/specify_cli/events/`). **Not yet a contract to build on.**
 
 ### Workflow definition (`workflow.yml`, `schema_version: "1.0"`) — documented [WF-PUB], [WF-README], [WF-REF]
 
@@ -139,13 +151,13 @@ the new integration. `specify integration upgrade` re-registers presets after re
 | Step type | Key fields |
 |---|---|
 | `command` | `command`, `input.args`, `integration`, `model`, `integration_args`, `integration_options` |
-| `prompt` | `prompt`, `integration` |
+| `prompt` | `prompt`, `integration`, `model`, `timeout` (source: default 300 s, undocumented for prompt steps) |
 | `shell` | `run`, `timeout` (default 300 s), `output_format: json` → `output.data`; env `SPECKIT_WORKFLOW_DIR` |
 | `init` | `here`/`project`, `integration`, `script`, `force`, `preset` |
 | `slot` | `name`; no-op unless filled by an overlay `replace` |
 | `gate` | `message`, `options`, `on_reject` (`abort` \| `skip` \| `retry`), `show_file`, `verdict_input` |
 | `if` / `switch` | `condition` + `then`/`else`; `expression` + `cases`/`default` |
-| `while` / `do-while` | `condition` + `steps` |
+| `while` / `do-while` | `condition` + `steps`, `max_iterations` |
 | `fan-out` / `fan-in` | per-item `step`, `max_concurrency`; `wait_for` |
 
 - **Expressions:** `{{ … }}` with `inputs.*`, `steps.<id>.output.*`, `item`, `context.run_id`,
@@ -154,7 +166,11 @@ the new integration. `specify integration upgrade` re-registers presets after re
   field with `enum`, keep unconstrained text out of `run`.
 - **Command dispatch:** a `command` step runs the integration CLI non-interactively with the slash
   invocation `/speckit.<cmd> <args>` (or skill form); if the CLI is not installed or does not support
-  dispatch, the step fails. Output: `exit_code`, `stdout`, `stderr`, `dispatched`.
+  dispatch, the step fails. Only `exit_code` is documented and usable: `stdout`/`stderr` exist but are
+  empty because dispatch streams to the terminal (full capture is "a planned enhancement" in source);
+  `prompt` steps likewise. Results must flow through files, or `shell` steps with
+  `output_format: json`. `integration_args`/`integration_options` are documented but only
+  `docker-agent` accepts them; every other integration rejects them — not a portable lever.
 - **Gates:** pause in non-TTY runs; `specify workflow resume <run_id> [--input k=v]`.
   `verdict_input` binds a decision to an input so CI or a resume can supply it.
 - **Run state** (documented layout): `.specify/workflows/runs/<run_id>/` with `state.json`,
@@ -163,15 +179,17 @@ the new integration. `specify integration upgrade` re-registers presets after re
   pre-sets the run id (#2742). Resume is top-level-step granular: a pause inside `if`/`while` re-runs
   the whole parent block.
 - **Overlays (0.13.2+) and slots (1.0.5+):** `.specify/workflows/overlays/<workflow-id>/*.yml` with
-  `insert_before|insert_after|replace|remove` on step ids; survive workflow updates; cannot change
-  inputs, metadata or `requires`. This is the documented way for a *project or organisation* to
-  customise a workflow it did not write.
+  `insert_before|insert_after|replace|remove` on step ids; lower priority wins (applied last); anchors
+  resolve recursively but not inside fan-out templates; survive workflow updates; cannot change
+  inputs, metadata or `requires`. This is the documented way for a *project* to customise a workflow
+  it did not write. **No package type can ship an overlay** — they are added only by
+  `specify workflow overlay add`; bundles provide `extensions|presets|steps|workflows` only.
 - **Custom step types** (`specify workflow step add`, step catalogs) exist but the official step
   catalog is empty and the format is thinly documented — avoid for now.
 - Install: `specify workflow add <dir|zip|tgz|url|id>`; a directory install keeps companion files
   (scripts), exposed through `context.workflow_dir` / `SPECKIT_WORKFLOW_DIR`.
 
-### Bundle manifest (`bundle.yml`, `schema_version: "1.0"`) — documented [BUN-REF], [BUN-EX]
+### Bundle manifest (`bundle.yml`, `schema_version: "1.0"`) — documented by example [BUN-REF], [BUN-EX]
 
 - `bundle`: `id`, `name`, `version`, `role`, `description`, `author`, `license`.
 - `requires`: `speckit_version`, `tools`, `mcp`.
@@ -183,28 +201,43 @@ the new integration. `specify integration upgrade` re-registers presets after re
 - `bundle install` is idempotent by **id, not version**; changing a recorded bundle needs
   `--refresh` (local source) or `bundle update` (catalog). Failed install is best-effort rollback;
   failed refresh is not rolled back. `bundle build` produces a zip; `bundle validate` checks references.
+- An optional top-level `integration` pins the bundle to one integration and aborts install on a
+  mismatch (source: `bundles/manifest.py`) — aisdlc should stay integration-agnostic.
+- `builtin://community` bundle catalog is discovery-only: users must add aisdlc's own catalog to install
+  by id. Version pins apply only at install/refresh time.
 - Preset **priority is set by the bundle**, which fixes EF's "both presets at priority 10" problem when
   installed via the bundle — but not when installed individually.
 
 ### D-010 — can the engine apply behaviour per run only?
 
-**No first-class mechanism (verified in source and docs).** A `command` step passes only the slash
-invocation plus `input.args` text to the agent CLI; it sets no environment variable or flag that the
-command body can see (`workflows/step/command/__init__.py`, `integrations/base.py:dispatch_command`).
-A preset preamble is materialised at install time and applies to every invocation. Options that stay
-within the contract:
+**No.** There is no first-class, documented mechanism (verified in source and docs). A `command` step
+passes only the slash invocation plus `input.args` text to the agent CLI and sets no environment variable
+or flag the command body can see (`workflows/step/command/__init__.py`, `integrations/base.py:dispatch_command`).
+A preset preamble is materialised at install time and applies to every invocation. Per-step
+`integration_args`/`integration_options` work only for `docker-agent`.
 
-1. **Gates in the workflow, commands untouched** (what D-010 already prefers): human approvals are
-   `gate` steps; `verdict_input` lets CI pre-answer them. Commands may still ask questions — in a
-   non-interactive dispatch the agent cannot get an answer, so it must proceed on stated assumptions.
-2. **Argument marker:** the workflow passes a fixed token in `input.args` (e.g. a leading
-   `[aisdlc:unattended]`) and a *conditional* preamble says "only if the arguments start with this
-   token, do not ask questions". Interactive users never type it. Judgement: works with any
-   integration, but it is prompt-level, not enforced.
-3. **`prompt` steps** that state the unattended rule inline and then name the command. Avoids touching
-   command bodies at all, at the cost of not using the `command` step's dispatch.
+Options, each with its risks (see the review, finding A1):
 
-Decision belongs to the user (update D-010 or add a new decision).
+1. **Gates in the workflow, commands untouched** (what D-010 already prefers). Approvals are `gate`
+   steps; `verdict_input` lets CI pre-answer them. *Risk:* in non-interactive dispatch an agent that asks
+   a question usually ends its turn and exits 0, so the step reads `COMPLETED` with no work done. Each
+   command step needs a following check (e.g. a `shell` step asserting the expected file in
+   `specs/<feature>/`).
+2. **Argument marker.** The workflow passes a fixed token in `input.args` and a *conditional* preamble
+   says "only if the arguments start with this token, do not ask questions". *Risks:* the token is part
+   of `$ARGUMENTS` and can leak into spec text or branch names unless the preamble strips it; hooks
+   (`EXECUTE_COMMAND`) and chained commands do not inherit it; it is still preamble text in every
+   composed body, so it meets D-010 only under a looser reading of "per run". Prompt-level, not enforced.
+3. **`prompt` steps** that state the unattended rule inline, then name the command. *Risks:* default
+   300 s timeout (source-only) kills long commands; the prompt must hard-code the invocation syntax
+   (`/speckit-…`, `$speckit-…`, `/skill:…`) per integration.
+4. **Launcher environment.** The agent subprocess inherits the environment of whoever runs
+   `specify workflow run`, and `SPECKIT_INTEGRATION_<KEY>_EXTRA_ARGS` appends flags to every dispatched
+   agent CLI (#2596). A CI job can set agent-native flags or an `SPECKIT_AISDLC_*` variable; manual use is
+   unaffected. *Risks:* set by the launcher, not by `workflow.yml`; flags are agent-specific; the generic
+   behaviour is source and CHANGELOG only, so adopting it adds an internal dependency.
+
+Choosing 2, 3 or 4 means a new decision that refines D-010. The user decides.
 
 ### Changes 0.7 → 1.0.13 that matter to aisdlc — [CHANGELOG]
 
@@ -221,16 +254,25 @@ Decision belongs to the user (update D-010 or add a new decision).
 | 1.0.4–1.0.9 | Preset `requires.extensions` (#4250); workflow `slot` (#4352, 1.0.5); bundle changes need explicit refresh (#4477); aliases may not shadow core (#4558); first-party `bugfix`/`assess` bundles (#4504) | Slots + overlays = organisation-preset extension point for workflows |
 | 1.0.13 | Bundled `github` extension for `taskstoissues` (#4488) | Candidate to depend on for tracker work |
 
-No item in 1.0.0–1.0.13 is marked breaking. Upstream releases every few days, so the compatibility
-matrix (hard rule 6) should test a minimum version plus latest.
+No item in 1.0.0–1.0.13 is marked breaking, but contract-tightening validation ships as `fix:` entries
+(#4191, #4477, #4558), any of which can reject a previously valid manifest. With releases every few days,
+hard rule 6 needs the floor version **and** latest tested on every aisdlc change, plus a scheduled job
+against latest. Also note: `specify integration upgrade` **refuses** a commands↔skills layout change
+while preset command overrides are installed (source: `integrations/command_upgrade.py`) — an upstream
+default switch such as Copilot moving to skills (#3976) means remove presets, upgrade, re-add.
 
 ### Implications for aisdlc (for the capability map; not decisions)
 
 - **Minimum version:** if aisdlc uses workflow `slot` and preset `requires.extensions`, the floor is
   1.0.5; otherwise 1.0.0 is a natural line. Candidate range `>=1.0.5,<2.0.0` (the user decides).
-- **Organisation-preset extension points available upstream:** preset templates/commands
-  (stack above ours by lower priority), extension config layers (`aisdlc-config.yml`, env
-  `SPECKIT_AISDLC_*`), workflow overlays on our workflow ids, and `slot` steps we declare on purpose.
+- **Organisation-preset extension points available upstream:** preset templates/commands (stack above
+  ours by lower priority) and the extension config convention (`aisdlc-config.yml`, env
+  `SPECKIT_AISDLC_*`, merged by our scripts). Workflow overlays and `slot` steps are **project-level**:
+  an organisation must deliver them by a documented `overlay add` setup step, its own workflow that
+  wraps ours, or a preset that composes the commands our workflow calls.
+- **Naming guardrail:** aisdlc extension templates and scripts use `aisdlc-`-prefixed names; any change
+  to a core template goes through a preset with `prepend`/`append`/`wrap`. CI can assert this.
+- **Workflow outputs:** route outcomes through files or `shell` JSON output, never command `stdout`.
 - **Hooks are weak for mandatory behaviour** (agent-interpreted, conditions skipped, priority ignored).
   Prefer workflow steps or preset composition for anything that must happen.
 - **Workflow run files are now documented**, so reading `inputs.json` from a `shell` step (EF's
@@ -242,5 +284,15 @@ matrix (hard rule 6) should test a minimum version plus latest.
 Engine internals speckit-aisdlc relies on that are not part of the documented contract. Keep this
 list empty, or justify each entry.
 
-- *(none yet)* — aisdlc has no code. Things to keep off this list: the agent runtime `events` schema,
-  `state.json` field layout, custom step types, and any `specify_cli` Python import.
+aisdlc has no code yet. Design assumptions already made, each to keep (and test), avoid, or decide:
+
+| Behaviour (source-only) | Plan |
+|---|---|
+| `specify integration upgrade` re-registers preset commands, so composed commands pick up the new upstream body | **Keep and test in CI:** install the floor version with aisdlc, upgrade, run `integration upgrade`, assert the composed body contains the new upstream text |
+| Preset install copies the whole package directory, including undeclared files | **Avoid:** declare scripts as `type: script` |
+| Env inheritance into dispatched agents; `SPECKIT_INTEGRATION_<KEY>_EXTRA_ARGS` | Only if D-010 option 4 is chosen |
+| Which integrations support CLI dispatch (no documented list) | Test in CI for each supported integration |
+| `prompt` step default timeout of 300 s | Only if D-010 option 3 is chosen; set `timeout` explicitly |
+
+Keep off this list entirely: the agent runtime `events` schema, `state.json` field layout, custom step
+types, and any `specify_cli` Python import.
