@@ -7,10 +7,10 @@
 # Safe to re-run: existing labels are updated, existing milestones and issues
 # (matched by exact title) are skipped.
 #
-# Requires: gh CLI logged in with the `repo` and `project` scopes.
-#   gh auth refresh -s project
-#
-# Usage: bash scripts/board/bootstrap.sh
+# Normally run by the "Bootstrap project board" GitHub Action
+# (.github/workflows/board-bootstrap.yml), which supplies GH_TOKEN from the WIKI_TOKEN secret.
+# To run elsewhere: gh CLI logged in with the `repo` and `project` scopes, then
+#   bash scripts/board/bootstrap.sh
 
 set -euo pipefail
 
@@ -19,9 +19,9 @@ OWNER="vishalkhondre"
 PROJECT_NUMBER=2
 
 command -v gh >/dev/null || { echo "gh CLI not found" >&2; exit 1; }
-gh auth status >/dev/null 2>&1 || { echo "gh is not logged in: run 'gh auth login'" >&2; exit 1; }
+gh auth status >/dev/null 2>&1 || { echo "gh is not authenticated: set GH_TOKEN or run 'gh auth login'" >&2; exit 1; }
 gh project view "$PROJECT_NUMBER" --owner "$OWNER" >/dev/null 2>&1 \
-  || { echo "Cannot read project #$PROJECT_NUMBER. Run: gh auth refresh -s project" >&2; exit 1; }
+  || { echo "Cannot read project #$PROJECT_NUMBER: the token needs the 'project' scope" >&2; exit 1; }
 
 # ---------------------------------------------------------------- labels
 label() { gh label create "$1" --repo "$REPO" --color "$2" --description "$3" --force >/dev/null; echo "label: $1"; }

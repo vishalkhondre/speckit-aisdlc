@@ -18,9 +18,9 @@ what's in flight; this file is the narrative handoff (D-017).
 
 ## Next actions
 
-1. **Bootstrap the board (Claude Code):** `gh auth refresh -s project` if needed, then
-   `bash scripts/board/bootstrap.sh`. It creates labels, milestones for phases 0–7, and six issues for
-   phases 0–2, and adds them to the project. Re-running it is safe.
+1. **Bootstrap the board (user, in the browser):** run it with the existing `WIKI_TOKEN` secret (classic PAT,
+   now with `project` + `public_repo` scopes): Actions → *Bootstrap project board* → *Run workflow*. It creates
+   labels, milestones for phases 0–7 and six issues for phases 0–2, and adds them to the project (D-018).
 2. **Board setup (user):** issue *Set up the project board views and built-in workflows*.
 3. **Pin the Spec Kit 1.0 public contract** (issue of the same name, Phase 1).
 4. **Prior-art sweep**, then **draft the capability map** (Phase 2 issues).
