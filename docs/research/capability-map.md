@@ -1,6 +1,6 @@
 # Capability map
 
-**Status:** proposed (revision 2) — awaiting the user's decision in #10. Nothing here is decided until then.
+**Status:** accepted (revision 2) — D-029, decided in #10 on 2026-10-01; open questions answered by D-030 to D-036.
 **Issue:** #9 · **Date:** 2026-10-01 · **Author:** Claude chat
 **Inputs:** `docs/research/upstream-spec-kit.md` (contract pinned at Spec Kit 1.0.13),
 `docs/reviews/2026-10-01-prior-art-sweep-prior-art-researcher.md` (14 candidates), decisions D-001 to D-028.
@@ -75,8 +75,8 @@ to assess.
 | 6 | **Decisions and briefs** | keep | `specs/<f>/decisions.md` (append-only `DEC-####`) and `specs/<f>/brief.md` (latest brief, D-027). aisdlc's own commands write them natively. Preset `aisdlc` **appends** a short best-effort section to core `specify`, `plan`, `tasks`, `implement` — **not** to `converge`. In workflows a `shell` check confirms `brief.md` was updated after each of those steps | 4 | decision log, brief |
 | 7 | **Converge loop** | keep (reuse core) | `do-while` around core `converge` → `shell` check `aisdlc-converge-check.py` (hash of `tasks.md` before/after, JSON output) → `implement` if tasks were appended. Bounded (default 5). **After the loop, a check stops the run if work remains** (engine continues silently on exhaustion). No gates inside the loop | 4 | appended tasks |
 | 8 | **Verify** | adapt (DEPEND on core converge) | `shell` step `aisdlc-checks.py` runs the configured checks (tests, lint, and optional security scans) and writes JSON; command `speckit.aisdlc.verify` maps results to requirements and writes the verdict; **a `shell` check stops the run unless the verdict is PASS** (a skipped check never passes) | 4 | `specs/<f>/verification.md` |
-| 9 | **Ship** | keep | Command `speckit.aisdlc.ship`: refuses a non-PASS verdict (an explicit override is recorded as `DEC-####`); PR body carries spec path, verdict, requirement coverage and decision summary; PR-template discovery; commit prefix by flow type; base branch from config; tracker via one config key `tracker: github` or `tracker: none` (`none` prints the PR command; also the fallback when `gh` is missing); **specs kept** (D-004) | 4 | commit + PR |
-| 10 | **Docs reconciliation** | keep | Command `speckit.aisdlc.docs`: three documentation layers, observed vs guideline content, conflicts flagged for a human and never auto-resolved, bounded inputs. Report goes into the PR body; a separate report file only when there are conflicts, followed by a gate that fires only then. **Phase: open question 1** | 4 or 5 | updated docs |
+| 9 | **Ship** | keep | Command `speckit.aisdlc.ship`: refuses a non-PASS verdict (an explicit override is recorded as `DEC-####`); PR body carries spec path, verdict, requirement coverage, decision summary and (until phase 5) a "documentation possibly affected" note (D-030); PR-template discovery; commit prefix by flow type; base branch from config; tracker via one config key `tracker: github` or `tracker: none` (`none` prints the PR command; also the fallback when `gh` is missing); **specs kept** (D-004) | 4 | commit + PR |
+| 10 | **Docs reconciliation** | keep | Command `speckit.aisdlc.docs`: three documentation layers, observed vs guideline content, conflicts flagged for a human and never auto-resolved, bounded inputs. Report goes into the PR body; a separate report file only when there are conflicts, followed by a gate that fires only then. | 5 (D-030) | updated docs |
 | 11 | **Review** (incl. security) | keep | Command `speckit.aisdlc.review` with scopes `full` and `quick`: read-only reviewers per area (correctness, security, maintainability; quick scope adds a constitution check); each finding verified at its cited line and triaged `fix` / `needs-decision` / `defer` | 5 | `specs/<f>/review.md` |
 | 12 | **Remediate** | adapt | No command: `fix` findings become tasks appended in converge's `per <source-ref> (<gap-type>)` style, then the converge loop runs again, bounded | 5 | appended tasks |
 | 13 | **Secure** | adapt | A review area (#11) plus security scanners in verify's configured checks (#8, available from phase 4). `threatspec` documented as an optional companion, not a bundle dependency | 4 (scanners), 5 (review area) | findings |
@@ -107,8 +107,8 @@ of truth.
 | Phase | Delivers (capability #) |
 |---|---|
 | **3 · Skeleton and compatibility CI** | 1 setup, 2 config, 3 compatibility CI; an empty bundle (extension + preset + feature workflow stub) installing on floor and latest |
-| **4 · MVP** | 4 start, 5 state, 6 decisions and briefs, 7 converge loop, 8 verify (incl. security scanners), 9 ship, 16 flow choice (feature only), 19 artifact checks; 10 docs if open question 1 says so → **feature flow end to end on GitHub** |
-| **5 · Breadth** | 10 docs (if not in 4), 11 review, 12 remediate, 13 secure review area, 14 bugfix flow, 15 quick flow, 16 all flows, 17 retrospective, 18 onboarding, 19 policy guard, pluggable tracker interface |
+| **4 · MVP** | 4 start, 5 state, 6 decisions and briefs, 7 converge loop, 8 verify (incl. security scanners), 9 ship, 16 flow choice (feature only), 19 artifact checks → **feature flow end to end on GitHub** |
+| **5 · Breadth** | 10 docs (first), 11 review, 12 remediate, 13 secure review area, 14 bugfix flow, 15 quick flow, 16 all flows, 17 retrospective, 18 onboarding, 19 policy guard, pluggable tracker interface |
 | **6 · Organisation preset** | A sample preset exercising every extension point below, including the setup-defaults path |
 
 ## Organisation-preset extension points
@@ -138,23 +138,18 @@ Composition onto aisdlc commands is materialised at install time; CI (#3) checks
   decision IDs in user projects `DEC-####`.
 - **Workflows:** names still open (#5).
 
-## Open questions for #10
+## Decisions on the open questions (#10)
 
-1. **Docs reconciliation in phase 4 or 5?** The architect recommends phase 5 (heaviest command, not needed
-   to get a PR out); the delivery reviewer includes "docs reconciled" in Done. Recommendation: **phase 5,
-   first item**; in the MVP, ship adds a one-line "documentation possibly affected" note to the PR body.
-2. **Review in phase 5** (both reviewers agree), with human PR review as the MVP's review step and security
-   scanners in verify's checks from phase 4. Confirm.
-3. **Tracker:** GitHub and `none` in phase 4; pluggable interface in phase 5; the tracker key is stored
-   generically from phase 4 so files don't change later. Confirm.
-4. **Unit of work:** one spec = one PR by default, small specs, per-story shipping as a later option. Confirm.
-5. **Quick review checks the constitution:** both reviewers agree yes. Confirm.
-6. **Config format:** flat YAML subset with a stdlib parser (keeps upstream's file names and the automatic
-   `local-config.yml` ignore), versus JSON, versus requiring PyYAML. Recommendation: flat YAML subset.
-7. **Workflow testing in CI:** agent steps need a real agent CLI. Recommendation: CI runs every deterministic
-   step against fixture projects and validates workflow files; agent steps are exercised in a manual or
-   scheduled job with a real agent. Decide in phase 3.
-8. **Workflow names** (#5).
+| # | Question | Decision |
+|---|---|---|
+| 1 | Docs reconciliation phase | Phase 5, first item; the MVP's PR notes "documentation possibly affected" (D-030) |
+| 2 | Review timing | Phase 5; human PR review is in the MVP's Done; ship refuses non-PASS; scanners in verify from phase 4 (D-031) |
+| 3 | Tracker | GitHub and `none` in phase 4, pluggable in phase 5, key stored generically from phase 4 (D-032) |
+| 4 | Unit of work | One spec = one PR; small specs; per-story shipping later (D-033) |
+| 5 | Quick review and the constitution | Yes (D-034) |
+| 6 | Config format | Flat YAML subset, stdlib parser (D-035) |
+| 7 | Workflow testing in CI | Deterministic steps on fixtures in CI; agent steps in a manual or scheduled job (D-036) |
+| 8 | Workflow names | Still open (#5), to settle in phase 4 |
 
 ## How the reviews were addressed
 

@@ -33,3 +33,11 @@ alternatives, is in [`docs/context/DECISIONS.md`](https://github.com/vishalkhond
 | D-026 | aisdlc commands use only their full names; no short aliases. |
 | D-027 | Each phase leaves a short "brief" for the next; decisions are logged per feature. |
 | D-028 | aisdlc stops at a ready-to-merge pull request; deployment stays with CI or organisation presets. |
+| D-029 | The capability map (revision 2) is accepted as the plan for what aisdlc builds, how, and in which phase. |
+| D-030 | Docs reconciliation is not in the MVP; it is the first phase 5 item. Until then, the PR notes "documentation possibly affected". |
+| D-031 | The review command comes in phase 5. In the MVP, human PR review is part of Done, ship refuses a non-PASS verdict, and security scanners can run in verify. |
+| D-032 | Trackers: GitHub and "none" in phase 4, a pluggable interface in phase 5. The tracker key is stored generically from the start. |
+| D-033 | One spec is one backlog item, one branch and one PR. Keep specs small; per-story shipping may come later. |
+| D-034 | The quick-scope review includes a constitution check. |
+| D-035 | Config is a flat subset of YAML, read by aisdlc's own parser with no extra dependencies. |
+| D-036 | CI runs every deterministic workflow step against test projects; agent steps run in a manual or scheduled job. |

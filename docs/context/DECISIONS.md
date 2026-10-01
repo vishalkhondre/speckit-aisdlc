@@ -394,3 +394,86 @@ presets. Revisit after v0.1.
 
 **Why:** Upstream's SDLC guide leaves deployment to plain CI; the sweep found nothing worth depending on;
 environment promotion is organisation-specific; it was the least proven idea in either source project.
+
+---
+
+### D-029 — Capability map accepted
+**Status:** accepted · **Date:** 2026-10-01 · **Session:** Claude chat
+
+**Decision:** `docs/research/capability-map.md` (revision 2) is accepted as the plan for what aisdlc builds,
+how, and in which phase, together with its Definition of Ready and Done, size rule, escalation path and
+organisation-preset extension points. Its open questions are answered by D-030 to D-036.
+
+**Review:** `docs/reviews/2026-10-01-capability-map-software-architect.md`,
+`docs/reviews/2026-10-01-capability-map-agile-delivery-consultant.md`.
+
+---
+
+### D-030 — Docs reconciliation is the first item of phase 5
+**Status:** accepted · **Date:** 2026-10-01 · **Session:** Claude chat
+
+**Decision:** The MVP (phase 4) does not include `speckit.aisdlc.docs`. Instead, ship adds a short
+"documentation possibly affected" note to the PR body. Docs reconciliation is the first phase 5 item.
+
+**Why:** It is the heaviest new command and is not needed to get a verified PR out.
+
+---
+
+### D-031 — Review in phase 5; human PR review is the MVP's review
+**Status:** accepted · **Date:** 2026-10-01 · **Session:** Claude chat
+
+**Decision:** `speckit.aisdlc.review` arrives in phase 5. In the MVP, human PR review is part of the
+feature flow's Definition of Done, ship refuses a non-PASS verify verdict, and security scanners can be
+configured as verify checks from phase 4.
+
+---
+
+### D-032 — Tracker: GitHub and "none" first, pluggable later
+**Status:** accepted · **Date:** 2026-10-01 · **Session:** Claude chat
+
+**Decision:** Phase 4 supports `tracker: github` and `tracker: none` (`none` is also the fallback when `gh` is
+missing). The pluggable tracker interface arrives in phase 5. The tracker key is stored generically in
+`specs/<f>/.aisdlc/state.json` from phase 4, so the file format does not change later.
+
+**Refines:** D-011.
+
+---
+
+### D-033 — Unit of work: one spec, one PR
+**Status:** accepted · **Date:** 2026-10-01 · **Session:** Claude chat
+
+**Decision:** By default one spec = one Feature-level backlog item = one branch = one PR; user stories map to
+child items. Guidance is to keep specs small (one or two stories). `state.json` keeps a `stories` list so
+per-story shipping can be added later without a format change.
+
+---
+
+### D-034 — Quick-scope review checks the constitution
+**Status:** accepted · **Date:** 2026-10-01 · **Session:** Claude chat
+
+**Decision:** `speckit.aisdlc.review` with the quick scope includes a constitution check (D-014).
+
+---
+
+### D-035 — Config format: flat YAML subset with a stdlib parser
+**Status:** accepted · **Date:** 2026-10-01 · **Session:** Claude chat
+
+**Decision:** aisdlc's config lives in `.specify/extensions/aisdlc/aisdlc-config.yml`, with per-machine
+overrides in `local-config.yml` (already gitignored by upstream) and env `SPECKIT_AISDLC_*`. The files use a
+documented flat key–value subset of YAML, parsed by aisdlc's own Python stdlib parser — no PyYAML, `yq` or
+`jq`.
+
+**Why:** Python's standard library has no YAML parser, and the `python3` that workflow steps call may not
+have PyYAML. A flat subset keeps upstream's file-name conventions (and the automatic ignore of
+`local-config.yml`) with no extra dependency.
+
+---
+
+### D-036 — Workflow testing in CI
+**Status:** accepted · **Date:** 2026-10-01 · **Session:** Claude chat
+
+**Decision:** CI validates workflow files and runs every deterministic step (`shell` steps and aisdlc
+scripts) against fixture projects on each change. Agent (`command`) steps are exercised in a manual or
+scheduled job with a real agent CLI.
+
+**Why:** Command steps need a dispatch-capable agent CLI, which normal CI runners do not have.
