@@ -1,0 +1,30 @@
+schema_version: "1.0"
+
+preset:
+  id: "aisdlc"
+  name: "aisdlc"
+  version: "0.0.1"
+  description: "Templates and core-command compositions for aisdlc. Composes with core (prepend/append), never replaces it."
+  author: "speckit-aisdlc contributors"
+  repository: "https://github.com/vishalkhondre/speckit-aisdlc"
+  license: "MIT"
+
+requires:
+  speckit_version: ">=1.0.5,<2.0.0"
+  extensions:
+    - "aisdlc"
+
+provides:
+  # Hard rule 2: core commands and templates are only ever composed with
+  # prepend/append (or wrap), never replaced. None are composed yet.
+  # aisdlc's own templates use the `aisdlc-` prefix so they can never shadow a
+  # core or extension template.
+  templates:
+    - type: "template"
+      name: "aisdlc-brief"
+      file: "templates/aisdlc-brief.md"
+      description: "Per-feature brief left by each phase for the next (D-027; placeholder)"
+
+tags:
+  - "sdlc"
+  - "workflow"

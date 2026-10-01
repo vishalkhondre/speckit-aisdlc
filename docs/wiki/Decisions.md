@@ -41,3 +41,5 @@ alternatives, is in [`docs/context/DECISIONS.md`](https://github.com/vishalkhond
 | D-034 | The quick-scope review includes a constitution check. |
 | D-035 | Config is a flat subset of YAML, read by aisdlc's own parser with no extra dependencies. |
 | D-036 | CI runs every deterministic workflow step against test projects; agent steps run in a manual or scheduled job. |
+| D-037 | aisdlc's preset uses priority 50, so organisation and other presets at the default 10 rank above it; aisdlc's additions still apply. |
+| D-038 | Workflow names: `aisdlc-feature`, `aisdlc-bugfix`, `aisdlc-quick`, `aisdlc-onboard`. |

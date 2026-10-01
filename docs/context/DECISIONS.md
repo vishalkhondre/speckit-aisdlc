@@ -477,3 +477,34 @@ scripts) against fixture projects on each change. Agent (`command`) steps are ex
 scheduled job with a real agent CLI.
 
 **Why:** Command steps need a dispatch-capable agent CLI, which normal CI runners do not have.
+
+---
+
+### D-037 — aisdlc preset priority 50
+**Status:** accepted · **Date:** 2026-10-01 · **Session:** Claude Code
+
+**Decision:** aisdlc's preset is installed at priority 50 (`bundle/bundle.yml`, `scripts/dev/install-local.sh`).
+Organisation presets and other presets at Spec Kit's default priority 10 therefore rank above it. Composition
+still applies aisdlc's additions (prepend/append layers stack), so aisdlc's behaviour is kept while the
+organisation's layer wins any conflict. A future second aisdlc preset uses priority 60.
+
+**Why:** Presets resolve by `(priority, id)`, lower first. At the default 10, an organisation preset would rank
+above or below aisdlc depending only on whether its id sorts before `aisdlc`. The capability map requires
+organisation template sections to rank above aisdlc. Changing a bundle-owned priority after release needs
+`--refresh`, so it was settled before the first release.
+
+**Review:** `docs/reviews/2026-10-01-bundle-skeleton-software-architect.md` (finding A1).
+
+---
+
+### D-038 — Workflow names
+**Status:** accepted · **Date:** 2026-10-01 · **Session:** Claude Code
+
+**Decision:** aisdlc's workflows are named `aisdlc-feature`, `aisdlc-bugfix`, `aisdlc-quick` and
+`aisdlc-onboard`. Each lives in `workflows/<name>/workflow.yml`.
+
+**Why:** The `aisdlc-` prefix keeps them clear of upstream (`speckit`, `bugfix`, `assess`) and community
+workflow ids. Settled before the first release (#20), because renaming a bundle-owned workflow id later means
+users must remove and re-add it.
+
+**Resolves:** #5.

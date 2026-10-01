@@ -1,0 +1,24 @@
+schema_version: "1.0"
+
+workflow:
+  # Name fixed by D-038.
+  id: "aisdlc-feature"
+  name: "aisdlc feature flow (skeleton)"
+  version: "0.0.1"
+  author: "speckit-aisdlc contributors"
+  description: "Skeleton of the aisdlc feature workflow; real steps arrive in phase 4"
+
+requires:
+  speckit_version: ">=1.0.5,<2.0.0"
+
+inputs:
+  description:
+    type: string
+    required: true
+    prompt: "Describe the feature"
+
+steps:
+  # No user input is interpolated into `run` (shell-safety rule).
+  - id: skeleton
+    type: shell
+    run: "echo 'aisdlc feature workflow skeleton: no steps yet'"
