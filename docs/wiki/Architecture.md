@@ -39,7 +39,8 @@ flowchart TB
 
 The Spec Kit 1.0 public contract is recorded, pinned at v1.0.13, in
 [`docs/research/upstream-spec-kit.md`](https://github.com/vishalkhondre/speckit-aisdlc/blob/main/docs/research/upstream-spec-kit.md).
-These findings feed the capability map; two of them are now decisions (D-023, D-024).
+These findings shaped the accepted capability map (D-029); two of them are decisions in their own
+right (D-023, D-024).
 
 - **Presets are the safe way to change core commands.** A preset can add text before or after a core
   command and leave the upstream body intact.
@@ -60,3 +61,20 @@ aisdlc itself is generic. An organisation adds its own conventions — extra tem
 branch naming, an issue tracker such as Jira, framework-specific practices such as SAFe — as a
 separate preset that installs on top. This keeps aisdlc reusable and lets organisations keep their
 specifics private.
+
+The accepted capability map names the extension points an organisation preset can use, all within
+Spec Kit's public contract:
+
+| Extension point | How |
+|---|---|
+| Template sections | Add sections to Spec Kit's templates |
+| Organisation defaults | Add defaults (branch pattern, base branch, checks, tracker) to the setup command |
+| Done criteria | Verify's configured checks; later a guard policy file |
+| Issue tracker | Add to the tracker section of start and ship; a pluggable interface in phase 5 |
+| Hierarchy and tags | Generic `parent` and `tags` in the per-feature state file |
+| Review areas | Add to the review command (phase 5) |
+| Constitution | Run Spec Kit's own constitution command with the organisation's principles |
+| Extra workflow steps | Project-level only: fill the named slots in aisdlc's workflows with a workflow overlay |
+
+Compatibility CI checks that an organisation preset's additions to aisdlc commands survive an aisdlc
+update.

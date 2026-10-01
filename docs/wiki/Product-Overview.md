@@ -1,74 +1,139 @@
 # Product overview
 
-aisdlc provides workflows for the main kinds of change a team makes. Each workflow chains Spec
-Kit's own commands with commands aisdlc adds, and pauses at human approval gates. Every step can
-also be run by hand as an interactive command (`/speckit-aisdlc-<command>` in agents that use
-skills), so the workflows are a convenience, not the only way in.
+aisdlc provides flows for the main kinds of change a team makes. Each flow chains Spec Kit's own
+commands with commands aisdlc adds, pauses at human approval gates, and ends at a pull request ready
+to merge. Every aisdlc command can also be run by hand as an interactive command
+(`/speckit-aisdlc-<command>` in agents that use skills).
 
-> **Status: proposed.** These workflows are the current design, not released features. Steps marked
-> *candidate* are still being evaluated. Workflow names are placeholders.
+> **Status: accepted design, not yet built.** This page follows the accepted
+> [capability map](https://github.com/vishalkhondre/speckit-aisdlc/blob/main/docs/research/capability-map.md)
+> (D-029). Nothing is released yet. Workflow names are still placeholders (issue #5), so this page
+> says "the feature flow", "the bugfix flow" and so on.
 
-| Workflow | Use it for | Ends with |
+| Flow | Use it for | Arrives in |
 |---|---|---|
-| Feature | A new capability, greenfield or in an existing codebase | Spec, plan and tasks kept in the repo; updated docs; PR |
-| Bugfix | Something is broken | Assessment, fix and test reports; regression test; PR |
-| Quick change | A trivial, well-defined tweak (a label, a message, a config value) | Small plan, review result, PR |
-| Brownfield onboarding *(candidate)* | Preparing an existing codebase before its first feature | Draft constitution and baseline docs |
+| Feature | A new capability, greenfield or in an existing codebase | Phase 4 (MVP) |
+| Bugfix | A defect in existing behaviour | Phase 5 (later) |
+| Quick change | A small change with no new requirement | Phase 5 (later) |
+| Onboarding | Preparing an existing codebase before its first feature | Phase 5 (later) |
 
-## Feature workflow
+Until the quick change flow ships, small fixes use a plain branch and pull request. The feature flow
+is for features.
+
+## Feature flow (phase 4, MVP)
 
 ```mermaid
 flowchart LR
-    A[Branch] --> B[Specify] --> C[Clarify] --> G1{{Spec approval}}
-    G1 --> D[Plan] --> G2{{Plan approval}} --> E[Tasks] --> F[Analyze]
-    F --> H[Implement] --> I[Converge loop]
-    I -->|work remains| H
-    I --> J[Verify *candidate*] --> K[Review *candidate*]
-    K --> L[Docs reconcile] --> M[Finish: commit and PR]
+    A[Start] --> B[Specify] --> G1{{Spec gate}}
+    G1 --> C[Plan] --> G2{{Plan gate}}
+    G2 --> D[Tasks] --> E[Implement] --> F[Converge]
+    F -->|tasks added| E
+    F --> R{Work remains?}
+    R -->|yes| X1[Stop the run]
+    R -->|no| V[Verify] --> P{Verdict PASS?}
+    P -->|no| X2[Stop the run]
+    P -->|yes| S[Ship: commit and PR]
+    CL[/Clarify - manual/] -.-> G1
+    AN[/Analyze - manual/] -.-> G2
 ```
 
-The converge loop compares the code with the spec, plan and tasks, adds tasks for anything missing,
-and repeats implementation until nothing remains (with an iteration limit). Specs are never deleted.
+- **Start** creates the branch from the configured pattern, links the tracker item, and records the
+  chosen flow and why.
+- **Clarify and analyze are manual commands, not workflow steps.** Run clarify at the spec gate if the
+  spec has open questions, then resume. Analyze is read-only and is useful before the plan gate.
+  Neither runs unattended, because neither writes a file a check can confirm.
+- **The converge loop** reuses Spec Kit's `converge`. It compares the code with the spec, plan and
+  tasks, appends tasks for anything missing, and runs implement again. It has an iteration limit
+  (default 5). If work still remains when the loop ends, the run stops.
+- **Verify** runs the configured checks (tests, lint, optional security scanners) and maps the results
+  to the requirements. The run stops unless the verdict is PASS. A skipped check never counts as a pass.
+- **Ship** refuses a non-PASS verdict. An explicit override is recorded as a decision. The PR body
+  carries the spec path, the verdict, requirement coverage, a decision summary and a "documentation
+  possibly affected" note (until docs reconciliation arrives in phase 5). Specs are kept.
 
-## Bugfix workflow
+## Bugfix flow (phase 5, later)
 
 ```mermaid
 flowchart LR
-    A[Branch] --> B[Bug assess] --> G1{{Assessment approval}}
+    A[Start] --> B[Bug assess] --> G1{{Assessment gate}}
     G1 --> C[Bug fix] --> D[Bug test] --> E{Verified?}
-    E -->|yes| F[Doc check *candidate*] --> G[Finish: commit and PR]
-    E -->|no| X[Stop and report]
+    E -->|yes| F[Ship: commit and PR]
+    E -->|no| X[Stop the run]
 ```
 
-Diagnosis, fix and verification stay separate. Only a verified fix can be shipped.
+Built around Spec Kit's own `bug` commands. Diagnosis, fix and verification stay separate, and only a
+verified fix can be shipped. Spec Kit's own bugfix workflow stays usable on its own.
 
-## Quick change workflow
+## Quick change flow (phase 5, later)
 
 ```mermaid
 flowchart LR
-    A[Branch] --> B[Quick plan] --> G1{{Plan approval}}
-    G1 --> C[Quick implement] --> D[Self-fixing review] --> E{Pass?}
-    E -->|yes| F[Doc check] --> G[Finish: commit and PR]
-    E -->|no| X[Stop: use the feature workflow]
+    A[Start] --> B[Quick plan] --> G1{{Plan gate}}
+    G1 --> C[Quick implement] --> D[Review - quick scope] --> P{Review PASS?}
+    P -->|yes| E[Ship: commit and PR]
+    P -->|no| X[Stop: escalate to the feature flow]
 ```
 
-No spec or task list. If the review can't fix every issue in one pass, the change is too big for
-this workflow.
+For changes that fit the size rule below. The quick-scope review includes a constitution check
+(D-034). The flow writes a minimal spec (the instruction and an acceptance line) so Spec Kit tools that
+expect a spec still work.
 
-## Brownfield onboarding *(candidate)*
+## Onboarding flow (phase 5, later)
 
 ```mermaid
 flowchart LR
-    A[Scan codebase] --> B[Draft constitution] --> C[Baseline docs] --> G1{{Team review}}
+    A[Scout the codebase] --> B[Proposal] --> G1{{Team review}} --> C[Spec Kit constitution]
 ```
 
-Run once per existing codebase. Content is marked as *observed* (inferred from code) or *guideline*
-(stated by people), so later work knows what is intent and what is just current behaviour.
+Run once per existing codebase. The proposal marks content as *observed* (inferred from the code) or
+*guideline* (stated by people). After the team approves it, Spec Kit's own constitution command writes
+the constitution.
 
-## Underneath every workflow
+## Definition of Ready and Done
 
-- **Per-feature session state**, so parallel feature branches don't interfere.
-- **Decision log** with the reasoning and rejected alternatives for each significant choice.
-- **Handoffs** between steps, so each step starts from a short brief instead of a long chat history.
-- **Issue tracker link**: GitHub issues built in; other trackers through an organisation preset.
-- **Configurable branch names**, defaulting to `feature/<key>-<slug>`.
+Items in **bold** are enforced by mechanical checks. The rest is team practice that aisdlc records.
+
+| Flow | Ready to start | Done (ready to merge) |
+|---|---|---|
+| Feature | A tracker item (or none, if the tracker is set to none); a problem statement; flow type confirmed at start | **Spec and plan approved at gates**; **all tasks closed and converge clean**; **verification PASS** (no skipped check counted as passing); PR links tracker item and spec; **human PR review approved** |
+| Bugfix *(phase 5)* | A reproducible report or tracker item | **Assessment approved**; **regression test added and passing**; **bug test result verified**; PR; human PR review |
+| Quick change *(phase 5)* | Fits the size rule; no new requirement | **Plan approved**; **review PASS** (constitution included); PR; human PR review |
+
+Organisations can tighten Done through verify's configured checks and, later, a guard policy file,
+without forking aisdlc.
+
+## Choosing a flow
+
+The size rule (configurable):
+
+- A new requirement, a schema or public API change, or more than 5 files changed: use the feature flow.
+- Anything smaller: use the quick change flow.
+- A defect in existing behaviour: use the bugfix flow.
+- An idea not yet worth building: use Spec Kit's `assess`.
+
+There is no separate routing command. Start applies the rule, asks you to confirm, and records the
+choice. In phase 4 only the feature flow exists.
+
+**Escalation.** If a quick change or a bug turns out to be a feature: keep the branch, record a
+decision saying why, pass the quick plan or bug assessment to specify as input, and let converge assess
+any code already written.
+
+## What is recorded per feature
+
+Everything is committed under `specs/<feature>/` and kept (D-004).
+
+| File | What it holds |
+|---|---|
+| `.aisdlc/state.json` | Flow type, spec path, tracker key, optional parent and tags, list of stories |
+| `.aisdlc/events.jsonl` | One line per gate or check: outcome, time, and the git user who approved |
+| `decisions.md` | Append-only decision log (`DEC-####`): flow choice, overrides, escalations |
+| `brief.md` | The latest brief: a short note each step leaves for the next (D-027) |
+| `verification.md` | The verify verdict and requirement coverage |
+
+By default one spec is one backlog item, one branch and one pull request (D-033). Keep specs small, one
+or two user stories, so pull requests stay small.
+
+## Out of scope
+
+aisdlc stops at a ready-to-merge pull request. It has no deploy command or workflow (D-028).
+Deployment stays with your CI or an organisation preset.

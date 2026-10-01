@@ -17,10 +17,10 @@ instead of replacing them, and its CI tests against new upstream versions before
 
 ## Where the project is now
 
-**Phase: design, working on the capability map.** No code has been released yet. Discovery is
-done, and the parts of Spec Kit 1.0 that aisdlc may rely on (its public contract) are pinned at
-v1.0.13. A prior-art sweep has checked which candidate capabilities already exist elsewhere. Next is
-drafting the capability map: deciding which capabilities aisdlc keeps, adapts or drops.
+**Phase: design done, phase 3 next.** No code has been released yet. Discovery is done, the parts
+of Spec Kit 1.0 that aisdlc may rely on (its public contract) are pinned at v1.0.13, and the
+capability map is accepted (D-029). The map says what aisdlc builds, how, and in which phase. Next is
+phase 3: an installable bundle skeleton, configuration, setup and compatibility CI.
 
 See [Roadmap](Roadmap) for the plan and [Decisions](Decisions) for what has been agreed so far.
 
