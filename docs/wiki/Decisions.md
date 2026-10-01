@@ -27,3 +27,5 @@ alternatives, is in [`docs/context/DECISIONS.md`](https://github.com/vishalkhond
 | D-020 | Every change goes through a branch and a pull request; nobody pushes to `main` directly. |
 | D-021 | Eight roadmap phases, each a milestone; compatibility testing comes before features. |
 | D-022 | Board conventions: issues are added automatically, status columns Backlog to Done, re-runnable setup. |
+| D-023 | Unattended runs: approval gates live in workflows, each command step is followed by a check that its expected file exists, and aisdlc's commands only ask for missing information. |
+| D-024 | Supported Spec Kit versions: 1.0.5 up to (not including) 2.0. Provisional until phase 3; tested on the oldest supported version, the latest release, and on a schedule. |

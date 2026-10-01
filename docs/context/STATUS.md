@@ -14,11 +14,13 @@ what's in flight; this file is the narrative handoff (D-017).
   `EXECUTE_COMMAND`, workflow engine, bundles, changes 0.7 → 1.0.13, and seeded *Internal dependencies*.
   `software-architect` review (APPROVE WITH CHANGES, all findings applied):
   `docs/reviews/2026-10-01-upstream-contract-software-architect.md`.
-- Headline findings: the workflow engine has **no per-run mechanism** (D-010's open point); hooks are
+- Headline findings: the workflow engine has **no per-run mechanism** (resolved by D-023); hooks are
   agent-interpreted and skip `condition`/ignore `priority`, so they are weak for mandatory behaviour;
   workflow overlays and slots are **project-level only** (no package can ship them); command-step output
   is `exit_code` only.
-- Accepted decisions D-001 to D-022 (summaries in `docs/wiki/Decisions.md`).
+- Accepted decisions D-001 to D-024 (summaries in `docs/wiki/Decisions.md`). New this session:
+  **D-023** unattended runs use workflow gates plus an artifact check after each command step;
+  **D-024** supported Spec Kit range `>=1.0.5,<2.0.0` (provisional until Phase 3).
 
 ## Next actions
 
@@ -31,8 +33,5 @@ what's in flight; this file is the narrative handoff (D-017).
 
 - **#5 — Workflow names** (`needs-decision`): best settled after the capability map.
 - **Release flow in scope?** Decided in #10.
-- **D-010 follow-up — unattended runs:** pick from the four options in `upstream-spec-kit.md` § D-010
-  (workflow gates only · argument marker · prompt steps · launcher environment). Option 1 needs no new
-  decision; 2–4 need one. No issue yet — Claude Code can open one if wanted.
-- **Supported Spec Kit range:** candidate `>=1.0.5,<2.0.0` (1.0.5 adds workflow `slot`); CI tests the
-  floor and latest plus a scheduled run against latest. Settle before Phase 3.
+- **D-024 range confirmation:** `>=1.0.5,<2.0.0` is provisional; confirm or adjust in Phase 3 when the
+  compatibility CI exists.

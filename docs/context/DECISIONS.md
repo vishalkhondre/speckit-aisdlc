@@ -302,3 +302,43 @@ every later feature is tested against new Spec Kit releases from the start.
 
 **Lesson recorded:** the first bootstrap run failed on that Auto-add race, not on a rate limit as first
 assumed. Read the job log before diagnosing.
+
+---
+
+### D-023 — Unattended runs: gates in workflows, artifact checks after command steps
+**Status:** accepted · **Date:** 2026-10-01 · **Session:** Claude Code
+
+**Decision:** aisdlc uses option 1 from `docs/research/upstream-spec-kit.md` § D-010:
+- Human approval gates live in the workflows (`gate` steps; `verdict_input` where CI must pre-answer).
+- Every `command` step in an aisdlc workflow is followed by a `shell` check that verifies the expected
+  artifact exists (e.g. the file under `specs/<feature>/`), so a command that stopped to ask a question
+  fails the run instead of passing silently.
+- aisdlc's own commands ask only for information missing from their arguments.
+
+**Refines:** D-010 — answers its open point. Spec Kit 1.0.13 has no per-run mechanism, so no unattended
+preamble is added (D-005 stands).
+
+**Why:** Stays entirely within the public contract. A non-interactive agent that asks a question exits 0,
+so the artifact check is what makes gates trustworthy.
+
+**Alternatives rejected:**
+- Argument marker with a conditional preamble — leaks into `$ARGUMENTS`, not inherited by hooks, still
+  text in every composed command.
+- `prompt` steps — undocumented 300 s timeout, per-integration invocation syntax.
+- Launcher environment / `SPECKIT_INTEGRATION_<KEY>_EXTRA_ARGS` — source-only and agent-specific.
+
+**Review:** `docs/reviews/2026-10-01-upstream-contract-software-architect.md` (finding A1).
+
+---
+
+### D-024 — Supported Spec Kit range (provisional)
+**Status:** accepted (provisional) · **Date:** 2026-10-01 · **Session:** Claude Code
+
+**Decision:** aisdlc declares `speckit_version: ">=1.0.5,<2.0.0"`. The range is provisional and is
+confirmed at Phase 3. Compatibility CI runs on the floor version, the latest release, and a schedule
+against the latest release (hard rule 6).
+
+**Why:** 1.0.5 adds workflow `slot` steps; 1.0.4 adds preset `requires.extensions`. Upstream tightens
+validation in patch releases (#4191, #4477, #4558), so testing only on aisdlc changes is not enough.
+
+**Review:** `docs/reviews/2026-10-01-upstream-contract-software-architect.md` (findings A6, A9).

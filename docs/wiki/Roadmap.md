@@ -21,6 +21,6 @@ feature after it is tested against new Spec Kit releases from the start.
 3. Decide the capability map.
 
 Open questions waiting on that work include the workflow names, whether a release flow is in
-scope, and the supported Spec Kit version range (to be settled before phase 3).
+scope, and confirming the provisional supported Spec Kit range (D-024) in phase 3.
 
 Live work items: [project board](https://github.com/users/vishalkhondre/projects/2). Current detail: [`docs/context/STATUS.md`](https://github.com/vishalkhondre/speckit-aisdlc/blob/main/docs/context/STATUS.md).
