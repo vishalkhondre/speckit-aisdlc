@@ -225,3 +225,19 @@ own work as issue → branch → PR also exercises aisdlc's own flow (D-011, D-0
 **Alternatives rejected:**
 - Both products editing the board — duplicate moves and drift from `STATUS.md`.
 - Tracking only in `STATUS.md` — hard to scan; no link between work items and PRs.
+
+---
+
+### D-018 — Board automation runs in GitHub, not on a local machine
+**Status:** accepted · **Date:** 2026-10-01 · **Session:** Claude chat
+
+**Decision:** No board work depends on a local `gh` login. Claude Code (cloud) creates issues through its
+GitHub connection; the project's built-in workflows add them to the board and move closed issues and
+merged PRs to Done; setup needing labels, milestones or project access runs as a manually triggered
+GitHub Action using the `BOARD_TOKEN` secret (classic PAT with `project` + `public_repo`/`repo` scopes).
+
+**Refines:** D-017 — the division of roles is unchanged; only the mechanism changes (D-017 assumed `gh`
+in Claude Code, which has no valid login in the cloud container).
+
+**Why:** The user does not want to run setup locally, and the built-in `GITHUB_TOKEN` cannot access
+user-owned projects.

@@ -49,14 +49,17 @@ The repo is the single source of truth. Chat history and per-product memory are 
 - Typical split: Claude chat for research, design and trade-offs; Claude Code for implementation,
   tests and CI. Either may do either.
 
-## Work tracking (D-017)
+## Work tracking (D-017, D-018)
 
 - Work items are GitHub issues, tracked on [Project #2](https://github.com/users/vishalkhondre/projects/2);
-  milestones are roadmap phases. `scripts/board/bootstrap.sh` creates labels, milestones and the first issues.
-- **Claude Code is the only agent that writes to issues and the board** (`gh` with the `project`
-  scope). Claude chat drafts issues; the user prioritises and resolves `needs-decision` items.
-- Branch per issue: `feature/<issue-number>-<slug>`. PRs must say `Closes #<issue-number>`; GitHub's
-  project workflows move merged and closed items to Done.
+  milestones are roadmap phases.
+- **Claude Code is the only agent that writes issues** (through its GitHub connection). Claude chat
+  drafts issues; the user prioritises and resolves `needs-decision` items.
+- **Board moves are automated, not done by agents** (D-018): the project's built-in workflows add new
+  repo issues to the board and move closed issues and merged PRs to Done. Anything needing labels,
+  milestones or project access runs as a GitHub Action with the `BOARD_TOKEN` secret
+  (`.github/workflows/board-bootstrap.yml` runs `scripts/board/bootstrap.sh`). No local `gh` is required.
+- Branch per issue: `feature/<issue-number>-<slug>`. PRs must say `Closes #<issue-number>`.
 - `STATUS.md` links to the board instead of repeating it.
 
 ## Specialist agents (`.claude/agents/`, D-016)
@@ -76,7 +79,8 @@ The repo is the single source of truth. Chat history and per-product memory are 
 | `CLAUDE.md` | Imports this file for Claude Code |
 | `LICENSE`, `NOTICE` | MIT licence (D-009); attribution for any third-party material |
 | `.claude/agents/` | Specialist subagents (D-016) |
-| `scripts/board/bootstrap.sh` | One-time (re-runnable) setup of labels, milestones and first issues |
+| `scripts/board/bootstrap.sh` | Re-runnable setup of labels, milestones and first issues |
+| `.github/workflows/board-bootstrap.yml` | Runs the bootstrap script in GitHub Actions (manual trigger) |
 | `.github/workflows/wiki-sync.yml` | Publishes `docs/wiki/` to the GitHub wiki on push to `main` |
 | `docs/context/STATUS.md` | Current state, last session, next actions, open questions |
 | `docs/context/DECISIONS.md` | Append-only decision log (`D-###`) |
