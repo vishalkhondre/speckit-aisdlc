@@ -23,8 +23,19 @@ gh auth status >/dev/null 2>&1 || { echo "gh is not authenticated: set GH_TOKEN 
 gh project view "$PROJECT_NUMBER" --owner "$OWNER" >/dev/null 2>&1 \
   || { echo "Cannot read project #$PROJECT_NUMBER: the token needs the 'project' scope" >&2; exit 1; }
 
+# Retry a gh call with back-off, printing GitHub's error on each failure.
+retry() {
+  local attempt out
+  for attempt in 1 2 3 4; do
+    if out=$("$@" 2>&1); then printf '%s\n' "$out"; return 0; fi
+    echo "  attempt $attempt failed: $out" >&2
+    [ "$attempt" -lt 4 ] && sleep $((attempt * 15))
+  done
+  return 1
+}
+
 # ---------------------------------------------------------------- labels
-label() { gh label create "$1" --repo "$REPO" --color "$2" --description "$3" --force >/dev/null; echo "label: $1"; }
+label() { retry gh label create "$1" --repo "$REPO" --color "$2" --description "$3" --force >/dev/null; echo "label: $1"; }
 label research        "5319e7" "Investigation or analysis"
 label decision        "fbca04" "Produces a decision for docs/context/DECISIONS.md"
 label needs-decision  "d93f0b" "Waiting on the user to decide"
@@ -38,7 +49,7 @@ milestone() {
   if grep -Fxq "$1" <<<"$existing_milestones"; then
     echo "milestone exists: $1"
   else
-    gh api "repos/$REPO/milestones" -f title="$1" -f description="$2" >/dev/null
+    retry gh api "repos/$REPO/milestones" -f title="$1" -f description="$2" >/dev/null
     echo "milestone created: $1"
   fi
 }
@@ -55,16 +66,33 @@ milestone "Phase 6 · Organisation preset" "Sample preset proving the extension 
 milestone "Phase 7 · First release" "v0.1."
 
 # ---------------------------------------------------------------- issues
-existing_issues=$(gh issue list --repo "$REPO" --state all --limit 500 --json title --jq '.[].title')
+# title<TAB>url for every existing issue, so re-runs can still add them to the project.
+existing_issues=$(gh issue list --repo "$REPO" --state all --limit 500 --json title,url \
+  --jq '.[] | "\(.title)\t\(.url)"')
+# Adds an issue to the project. "Already exists" counts as success: the project's
+# Auto-add workflow often adds a new issue before this script does.
+add_to_project() {
+  local attempt out
+  for attempt in 1 2 3 4; do
+    if out=$(gh project item-add "$PROJECT_NUMBER" --owner "$OWNER" --url "$1" 2>&1); then return 0; fi
+    if grep -qi "already exists" <<<"$out"; then return 0; fi
+    echo "  attempt $attempt failed: $out" >&2
+    [ "$attempt" -lt 4 ] && sleep $((attempt * 15))
+  done
+  return 1
+}
 issue() {  # title, milestone, labels (comma-separated), body
   local title="$1" ms="$2" labels="$3" body="$4" url
-  if grep -Fxq "$title" <<<"$existing_issues"; then
-    echo "issue exists: $title"
+  url=$(awk -F'\t' -v t="$title" '$1 == t { print $2; exit }' <<<"$existing_issues")
+  if [ -n "$url" ]; then
+    add_to_project "$url"
+    echo "issue exists (ensured on board): $title"
     return
   fi
-  url=$(gh issue create --repo "$REPO" --title "$title" --milestone "$ms" --label "$labels" --body "$body")
-  gh project item-add "$PROJECT_NUMBER" --owner "$OWNER" --url "$url" >/dev/null
+  url=$(retry gh issue create --repo "$REPO" --title "$title" --milestone "$ms" --label "$labels" --body "$body" | tail -1)
+  add_to_project "$url"
   echo "issue created: $title -> $url"
+  sleep 3   # pace content creation
 }
 
 issue "Set up the project board views and built-in workflows" "$M0" "chore" \
