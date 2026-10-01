@@ -23,3 +23,7 @@ alternatives, is in [`docs/context/DECISIONS.md`](https://github.com/vishalkhond
 | D-016 | Specialist review agents check proposals before decisions; this wiki is published from the repo. |
 | D-017 | Work is tracked as GitHub issues on a project board; Claude Code keeps the board up to date. |
 | D-018 | Board setup and updates run in GitHub (Actions and project automation), not on anyone's machine. |
+| D-019 | The repository is public; organisation-specific analysis is kept private and out of the repo. |
+| D-020 | Every change goes through a branch and a pull request; nobody pushes to `main` directly. |
+| D-021 | Eight roadmap phases, each a milestone; compatibility testing comes before features. |
+| D-022 | Board conventions: issues are added automatically, status columns Backlog to Done, re-runnable setup. |

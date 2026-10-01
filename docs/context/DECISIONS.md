@@ -241,3 +241,64 @@ in Claude Code, which has no valid login in the cloud container).
 
 **Why:** The user does not want to run setup locally, and the built-in `GITHUB_TOKEN` cannot access
 user-owned projects.
+
+---
+
+### D-019 — The repository is public; proprietary analysis stays private
+**Status:** accepted · **Date:** 2026-10-01 · **Session:** Claude chat
+
+**Decision:** `vishalkhondre/speckit-aisdlc` is a public repository. This is possible because aisdlc is
+generic and de-branded (D-007, D-008). The analysis of the internal enterprise layer is kept only in the
+private claude.ai Project, never in this repo.
+
+**Background:** An earlier repository (`speckit-sdlc`) briefly published that analysis. It was deleted and
+recreated under the current name so the material is not in any commit history.
+
+**Impact:** Every commit must pass hard rule 7. Anything that cannot be written without naming an
+organisation belongs in a private location, not here.
+
+---
+
+### D-020 — Git workflow: branch and pull request for every change
+**Status:** accepted · **Date:** 2026-10-01 · **Session:** Claude chat
+
+**Decision:** No agent pushes to `main`. Every change goes on a branch and is merged by the user through a
+pull request.
+- Claude chat branches: `chat/<topic>`.
+- Issue work (normally Claude Code): `feature/<issue-number>-<slug>` (D-012), PR body `Closes #<n>`.
+- Commits made by agents are authored as Claude (`noreply@anthropic.com`) with a `Co-Authored-By` trailer,
+  so GitHub shows them as verified agent commits.
+
+**Why:** Keeps `main` reviewed, lets two products work without overwriting each other (one editor at a
+time still applies to shared files), and gives the board's "PR merged → Done" automation something to act on.
+
+---
+
+### D-021 — Roadmap phases are the milestones; compatibility CI before features
+**Status:** accepted · **Date:** 2026-10-01 · **Session:** Claude chat
+
+**Decision:** The roadmap has eight phases, each a GitHub milestone: 0 Discovery and decisions ·
+1 Upstream contract · 2 Capability map · 3 Skeleton and compatibility CI · 4 MVP · 5 Breadth ·
+6 Organisation preset · 7 First release. Phase 3 (a bundle that installs and is tested against supported
+Spec Kit versions and the latest release) comes before any feature work.
+
+**Why:** Upstream compatibility is the promise the project rests on (hard rule 6); building it first means
+every later feature is tested against new Spec Kit releases from the start.
+
+---
+
+### D-022 — Project board conventions
+**Status:** accepted · **Date:** 2026-10-01 · **Session:** Claude chat
+
+**Decision:**
+- The project's **Auto-add** workflow is on, so every new issue in this repo lands on the board by itself.
+  Closed issues and merged PRs move to Done through the built-in workflows.
+- The board uses the project's existing status columns: Backlog → Ready → In progress → In review → Done.
+  New items start in Backlog.
+- Labels: `research`, `decision`, `needs-decision`, `build`, `docs`, `chore`.
+- `scripts/board/bootstrap.sh` (run by the *Bootstrap project board* Action) is safe to re-run: it updates
+  labels, skips existing milestones and issues, retries GitHub writes, and treats "already in this project"
+  as success, because Auto-add usually adds an issue before the script does.
+
+**Lesson recorded:** the first bootstrap run failed on that Auto-add race, not on a rate limit as first
+assumed. Read the job log before diagnosing.

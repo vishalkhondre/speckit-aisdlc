@@ -24,7 +24,7 @@ conventions, tracker defaults) lives in separate presets outside this repo (D-00
 5. **Commands are interactive** (D-005). Do not install a global "never ask questions" preamble.
 6. **Upstream compatibility is a release gate.** CI must install the supported Spec Kit versions
    (and the latest release) and exercise the bundle before any release ships.
-7. **Generic and de-branded (D-007, D-008).** No organisation-specific names, templates, conventions
+7. **Generic and de-branded (D-007, D-008, D-019 — this repo is public).** No organisation-specific names, templates, conventions
    or defaults in this repo. Content adapted from the internal enterprise layer is allowed but must be
    fully de-branded: no company name, abbreviation or product prefix in templates, prompts, file or
    folder names, config keys, environment variables, variable names, or examples (use neutral
@@ -49,17 +49,19 @@ The repo is the single source of truth. Chat history and per-product memory are 
 - Typical split: Claude chat for research, design and trade-offs; Claude Code for implementation,
   tests and CI. Either may do either.
 
-## Work tracking (D-017, D-018)
+## Work tracking and git workflow (D-017, D-018, D-020, D-022)
 
 - Work items are GitHub issues, tracked on [Project #2](https://github.com/users/vishalkhondre/projects/2);
-  milestones are roadmap phases.
+  milestones are the roadmap phases (D-021). Labels: `research`, `decision`, `needs-decision`, `build`,
+  `docs`, `chore`.
 - **Claude Code is the only agent that writes issues** (through its GitHub connection). Claude chat
   drafts issues; the user prioritises and resolves `needs-decision` items.
-- **Board moves are automated, not done by agents** (D-018): the project's built-in workflows add new
-  repo issues to the board and move closed issues and merged PRs to Done. Anything needing labels,
-  milestones or project access runs as a GitHub Action with the `WIKI_TOKEN` secret (one PAT with `project` + `public_repo`)
-  (`.github/workflows/board-bootstrap.yml` runs `scripts/board/bootstrap.sh`). No local `gh` is required.
-- Branch per issue: `feature/<issue-number>-<slug>`. PRs must say `Closes #<issue-number>`.
+- **Board moves are automated, not done by agents.** Auto-add puts new issues on the board (in Backlog);
+  closed issues and merged PRs move to Done. Setup needing labels, milestones or project access runs as
+  the *Bootstrap project board* Action (`WIKI_TOKEN` secret, one PAT with `project` + `public_repo`).
+  No local `gh` is required.
+- **Never push to `main`.** Every change is a branch plus a PR the user merges: `chat/<topic>` from Claude
+  chat, `feature/<issue-number>-<slug>` for issue work, PR body `Closes #<issue-number>`.
 - `STATUS.md` links to the board instead of repeating it.
 
 ## Specialist agents (`.claude/agents/`, D-016)
