@@ -2,7 +2,7 @@
 
 | Phase | Output | Status |
 |---|---|---|
-| 0. Discovery and decisions | Research on Spec Kit and related projects; decisions D-001 to D-016 | Nearly done |
+| 0. Discovery and decisions | Research on Spec Kit and related projects; decisions D-001 to D-017 | Nearly done |
 | 1. Upstream contract | What Spec Kit 1.0 guarantees: manifests, composition, hooks, workflow engine | Next |
 | 2. Capability map | Every candidate capability marked keep, adapt or drop, reviewed by the specialist agents | Planned |
 | 3. Skeleton and compatibility CI | An empty bundle that installs on supported Spec Kit versions and the latest release, plus release checks | Planned |
@@ -14,4 +14,4 @@
 Compatibility CI comes before features on purpose: it is the promise the project rests on, so every
 feature after it is tested against new Spec Kit releases from the start.
 
-Current detail: [`docs/context/STATUS.md`](https://github.com/vishalkhondre/speckit-aisdlc/blob/main/docs/context/STATUS.md).
+Live work items: [project board](https://github.com/users/vishalkhondre/projects/2). Current detail: [`docs/context/STATUS.md`](https://github.com/vishalkhondre/speckit-aisdlc/blob/main/docs/context/STATUS.md).

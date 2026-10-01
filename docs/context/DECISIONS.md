@@ -201,3 +201,27 @@ One-way publishing keeps the repo the single source of truth.
 **Limits:** All agents run on the same model and share its blind spots; key decisions still benefit
 from human expert review. The SAFe-fluent consultant keeps aisdlc framework-neutral; SAFe-specific
 behaviour belongs in organisation presets.
+
+---
+
+### D-017 — Work is tracked on GitHub Project #2; Claude Code is the single board writer
+**Status:** accepted · **Date:** 2026-10-01 · **Session:** Claude chat
+
+**Decision:** Work items are GitHub issues in this repo, tracked on the user's GitHub Project #2
+(https://github.com/users/vishalkhondre/projects/2), with milestones = roadmap phases.
+- **Claude Code** is the only agent that writes to issues and the board (via `gh`): creates issues,
+  moves items to In progress, opens PRs that say `Closes #N`.
+- **Claude chat** shapes the backlog by drafting issues (in the repo, or directly only when Claude Code
+  is not active).
+- **The user** sets priority and resolves `needs-decision` items.
+- **GitHub's built-in project workflows** move closed issues and merged PRs to Done.
+
+`STATUS.md` links to the board rather than repeating it; the wiki Roadmap reflects the milestones.
+
+**Why:** Board state changes where the work happens (branches, PRs), `gh` access is reliable in Claude
+Code, and a single writer prevents drift — the same reasoning as one repo editor at a time. Tracking our
+own work as issue → branch → PR also exercises aisdlc's own flow (D-011, D-012).
+
+**Alternatives rejected:**
+- Both products editing the board — duplicate moves and drift from `STATUS.md`.
+- Tracking only in `STATUS.md` — hard to scan; no link between work items and PRs.
