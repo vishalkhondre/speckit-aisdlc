@@ -1,0 +1,31 @@
+schema_version: "1.0"
+
+extension:
+  id: "aisdlc"
+  name: "aisdlc"
+  version: "0.0.1"
+  description: "Generic SDLC add-on for Spec Kit: setup, start, verify and ship around the core flow, with durable specs."
+  author: "speckit-aisdlc contributors"
+  repository: "https://github.com/vishalkhondre/speckit-aisdlc"
+  license: "MIT"
+  homepage: "https://github.com/vishalkhondre/speckit-aisdlc"
+
+requires:
+  # D-024: provisional range, confirmed in phase 3 (#21).
+  speckit_version: ">=1.0.5,<2.0.0"
+
+provides:
+  # D-026: full speckit.aisdlc.<command> names only, no aliases.
+  commands:
+    - name: "speckit.aisdlc.setup"
+      file: "commands/speckit.aisdlc.setup.md"
+      description: "Set up aisdlc for this project (placeholder until #18)"
+
+  # Scripts arrive with the config loader (#17). Convention: plain slug names
+  # prefixed `aisdlc-`, Python 3 stdlib only, declared here so nothing relies on
+  # undeclared files being copied.
+
+tags:
+  - "sdlc"
+  - "workflow"
+  - "verification"

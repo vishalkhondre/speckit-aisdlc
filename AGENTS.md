@@ -81,6 +81,11 @@ The repo is the single source of truth. Chat history and per-product memory are 
 | `CLAUDE.md` | Imports this file for Claude Code |
 | `LICENSE`, `NOTICE` | MIT licence (D-009); attribution for any third-party material |
 | `.claude/agents/` | Specialist subagents (D-016) |
+| `extension/` | The `aisdlc` extension: `extension.yml`, `commands/speckit.aisdlc.<command>.md`, later `scripts/aisdlc-*.py` |
+| `preset/` | The `aisdlc` preset: `preset.yml`, `templates/aisdlc-*.md`, later prepend/append compositions of core commands |
+| `workflows/<id>/` | One directory per aisdlc workflow (`workflow.yml`); ids are placeholders until #5 |
+| `bundle/bundle.yml` | Bundle manifest: extension, preset and workflows at one version |
+| `scripts/dev/install-local.sh` | Installs aisdlc from this checkout into a Spec Kit project |
 | `scripts/board/bootstrap.sh` | Re-runnable setup of labels, milestones and first issues |
 | `.github/workflows/board-bootstrap.yml` | Runs the bootstrap script in GitHub Actions (manual trigger) |
 | `.github/workflows/wiki-sync.yml` | Publishes `docs/wiki/` to the GitHub wiki on push to `main` |
@@ -90,7 +95,8 @@ The repo is the single source of truth. Chat history and per-product memory are 
 | `docs/reviews/` | Specialist agent review reports |
 | `docs/wiki/` | Source of the GitHub wiki — never edit the wiki directly |
 
-Source layout (extension, presets, workflows, bundle) will be added here once decided.
+All four package manifests carry the same version and `speckit_version` range (D-024). Names: commands
+`speckit.aisdlc.<command>` with no aliases (D-026); templates and scripts `aisdlc-*`.
 
 ## Glossary
 
